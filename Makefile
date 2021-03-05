@@ -61,7 +61,10 @@ buf-generate: $(buf) $(protoc) $(protoc_gen_go)
 	@$(buf) generate
 
 build:
-	$(info [$@] building the main...)
+	$(info [$@] building the plugin...)
+	@go build -o $GOPATH/bin/protoc-gen-messageintegrity cmd/plugin/main.go
+
+	$(info [$@] building the example main...)
 	@go build -o bin/main cmd/example/main.go
 
 run:

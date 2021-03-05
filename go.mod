@@ -1,4 +1,4 @@
-module github.com/einride/thesis-implicit-message-integrity
+module github.com/einride/protoc-gen-messageintegrity
 
 go 1.14
 
