@@ -22,6 +22,11 @@ include tools/semantic-release/rules.mk
 
 current_dir = $(shell pwd)
 
+$(protoc_gen_message_integrity):
+
+	$(info [protoc-gen-message-integrity] building binary...)
+	@go build -o $GOPATH/bin/protoc-gen-messageintegrity cmd/plugin/main.go
+
 .PHONY: clean
 clean:
 	$(info [$@] removing build files...)
@@ -54,11 +59,13 @@ buf-check-lint: $(buf)
 	@$(buf) check lint
 
 .PHONY: buf-generate
-buf-generate: $(buf) $(protoc) $(protoc_gen_go)
-
+buf-generate: $(buf) $(protoc) $(protoc_gen_go) $(protoc_gen_message_integrity)
+	echo $(protoc_gen_message_integrity)
+	@go build -o $(GOPATH)/bin/protoc-gen-messageintegrity cmd/plugin/main.go
 	$(info [$@] generating protobuf stubs...)
 	@rm -rf internal/examples/proto/gen
 	@$(buf) generate
+
 
 build:
 	$(info [$@] building the plugin...)

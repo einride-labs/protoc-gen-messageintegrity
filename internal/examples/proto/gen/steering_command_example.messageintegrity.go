@@ -1,8 +1,8 @@
-package verification
+package v1
 
 import (
-	"github.com/einride/protoc-gen-messageintegrity/internal/verification"
-	"os"
+	verification "github.com/einride/protoc-gen-messageintegrity/internal/verification"
+	os "os"
 )
 
 const ImplicitMessageIntegrityKey = "IMPLICIT_MESSAGE_INTEGRITY_KEY"
