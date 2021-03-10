@@ -11,9 +11,9 @@ plugins:
   - "@semantic-release/github"
 
 branches: ["master"]
-# github plugin is the only one running this step and we're not interested
+# github messageintegrity is the only one running this step and we're not interested
 # in its updates to PR and issues
 success: false
-# github plugin is the only one running this step and we're not interested
+# github messageintegrity is the only one running this step and we're not interested
 # the issues it creates due to failed releases
 fail: false

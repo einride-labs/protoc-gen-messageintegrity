@@ -1,4 +1,4 @@
-package plugin
+package messageintegrity
 
 import (
 	v1 "github.com/einride/protoc-gen-messageintegrity/internal/examples/proto/gen"

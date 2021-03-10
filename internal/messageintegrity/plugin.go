@@ -1,4 +1,4 @@
-package plugin
+package messageintegrity
 
 import (
 	"bytes"
@@ -12,11 +12,11 @@ import (
 	"strings"
 )
 
-type MessageIntegrityPlugin struct {
+type Plugin struct {
 	*protogen.Plugin
 }
 
-func (g *MessageIntegrityPlugin) Generate() error {
+func (g *Plugin) Generate() error {
 	log.Println("Hello Implicit Message Integrity plugin")
 	// Good reference tutorial here:
 	// https://medium.com/@tim.r.coulson/writing-a-protoc-plugin-with-google-golang-org-protobuf-cd5aa75f5777
