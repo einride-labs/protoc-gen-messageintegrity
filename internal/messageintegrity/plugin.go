@@ -40,6 +40,11 @@ func (g *Plugin) Generate() error {
 	}
 	// Iterate through the file structs from protoc.
 	for _, file := range plugin.Files {
+		// We don't want to generate .messageintegrity.go files for protoc-gen-go protos like descriptor which we want
+		// to extend internally to define the signature custom option.
+		if  strings.HasPrefix(file.Desc.Path(), "google/protobuf/descriptor") {
+			continue
+		}
 		// Generate code in here to a buffer.
 		var buf bytes.Buffer
 		// Write autogen warning.
@@ -94,7 +99,6 @@ func (x *%s) Verify() (bool, error) {
 			GoName:       "github.com/einride/protoc-gen-messageintegrity/internal/verification",
 			GoImportPath: "github.com/einride/protoc-gen-messageintegrity/internal/verification",
 		})
-
 		// Write file.
 		if _, err = file.Write(buf.Bytes()); err != nil {
 			return err
@@ -107,5 +111,6 @@ func (x *%s) Verify() (bool, error) {
 		}
 		fmt.Fprint(os.Stdout, string(out))
 	}
+
 	return nil
 }
