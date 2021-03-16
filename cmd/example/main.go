@@ -24,7 +24,7 @@ func main() {
 	if err = proto.Unmarshal(message, receivedMsg); err != nil {
 		log.Fatalln("Failed to decode address book:", err)
 	}
-	fmt.Println(fmt.Printf("The steering angle is: %f", receivedMsg.SteeringAngle))
+	fmt.Printf("The steering angle is: %f", receivedMsg.SteeringAngle)
 
 	// Most basic hmac integrity verification by adding a field "signature" to the proto.
 	// Generate a key
