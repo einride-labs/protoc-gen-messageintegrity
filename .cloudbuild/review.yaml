@@ -10,4 +10,5 @@ steps:
       - COMMIT_SHA=$COMMIT_SHA
 
   - name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
-    args: ["ls"] # TODO(paulmolloy): Put make here after.
+    entrypoint: "/bin/bash"
+    args: ["-c", "ls"] # TODO(paulmolloy): Put make here after.
