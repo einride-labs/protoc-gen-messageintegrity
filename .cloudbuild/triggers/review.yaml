@@ -1,0 +1,8 @@
+name: thesis-message-integrity-review
+description: "PR review pipeline."
+filename: .cloudbuild/review.yaml
+github:
+  owner: einride
+  name: thesis-implicit-message-integrity
+  push:
+    branch: ".*"

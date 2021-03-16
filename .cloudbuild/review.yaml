@@ -1,0 +1,14 @@
+#options:
+#  machineType: N1_HIGHCPU_8
+
+steps:
+  - name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
+    entrypoint: "/bin/bash"
+    args: ["-c", "/cloud-builder/git-init.sh"]
+    env:
+      - REPO_NAME=$REPO_NAME
+      - COMMIT_SHA=$COMMIT_SHA
+
+  - name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
+    entrypoint: "/bin/bash"
+    args: ["-c", "ls"] # TODO(paulmolloy): Put make here after.
