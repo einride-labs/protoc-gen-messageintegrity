@@ -1,0 +1,9 @@
+version: v1beta1
+
+plugins:
+  - name: go
+    out: internal/examples/proto/gen
+    opt: module=go.einride.tech/thesis-implicit-message-integrity/internal/examples/proto/gen/integrity/v1
+  - name: messageintegrity
+    opt: module=go.einride.tech/thesis-implicit-message-integrity/internal/examples/proto/gen/integrity/v1
+    out: internal/examples/proto/gen

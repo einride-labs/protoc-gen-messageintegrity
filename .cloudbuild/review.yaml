@@ -2,13 +2,39 @@
 #  machineType: N1_HIGHCPU_8
 
 steps:
-  - name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
+  - id: init git
+    name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
     entrypoint: "/bin/bash"
     args: ["-c", "/cloud-builder/git-init.sh"]
     env:
       - REPO_NAME=$REPO_NAME
       - COMMIT_SHA=$COMMIT_SHA
 
-  - name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
+  - id: fetch github token
+    name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - "gcloud secrets versions access latest --secret=einride-bot-github-token --project=einride-terraform > github.token"
+
+  - id: setup git credentials
+    name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo -e "https://git:$(cat github.token)@github.com" > $${HOME}/.git-credentials \
+        && git config credential.helper store \
+        && git config url."https://github.com/".insteadOf "git@github.com:" \
+        && git config url."https://".insteadOf git:// \
+        && git config url."https://".insteadOf ssh:// \
+        && rm github.token
+
+  - id: run make
+    name: eu.gcr.io/einride-thesis-msg-integrity/cloud-builder:1.16
     entrypoint: "/bin/bash"
-    args: ["-c", "ls"] # TODO(paulmolloy): Put make here after.
+    args:
+      - "-c"
+      - |
+        git config --system --remove-section url."git@github.com:einride/"\
+        && make

@@ -1,0 +1,7 @@
+.idea
+build/
+tools/*/*/
+credentials/*.json
+node_modules/
+.swp
+gen/*

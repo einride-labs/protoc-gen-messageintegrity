@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package integrity.v1;
+
+option go_package = "go.einride.tech/thesis-implicit-message-integrity/internal/examples/proto/gen/integrity/v1";
+message SteeringCommand {
+    float steering_angle = 1;
+}
+
+message SteeringCommandVerification {
+    float steering_angle = 1;
+    bytes signature = 2; // This is the simplest option just a field added to every proto.
+}

@@ -1,0 +1,21 @@
+version: v1beta1
+
+build:
+  roots:
+    - internal/examples/proto/src
+lint:
+  use:
+    - DEFAULT
+  service_suffix: Service
+  ignore: []
+  ignore_only:
+    SERVICE_SUFFIX:
+    PACKAGE_VERSION_SUFFIX:
+    ENUM_ZERO_VALUE_SUFFIX:
+
+breaking:
+  use:
+
+  # IMPORTANT: Break checking may only be disabled for packages owned by a
+  #            specific team, by a member of the team.
+  ignore: []
