@@ -24,9 +24,9 @@ func BenchmarkSign(b *testing.B) {
 	resultError = err
 }
 
-
 // Result is needed to avoid compiler optimization.
 var result bool
+
 func BenchmarkVerify(b *testing.B) {
 	var sigSteeringCommand integpb.SteeringCommandVerification
 	key := "a key for signing"
