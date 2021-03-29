@@ -2,7 +2,6 @@ package messageintegrity
 
 import (
 	v1 "github.com/einride/protoc-gen-messageintegrity/internal/examples/proto/gen"
-	"github.com/einride/protoc-gen-messageintegrity/internal/verification"
 	"google.golang.org/protobuf/proto"
 	"log"
 	"os"
@@ -54,8 +53,8 @@ func TestSign(t *testing.T) {
 func TestSignVerify(t *testing.T) {
 	tests := []struct {
 		key                   string
-		message               verification.VerifiableMessage
-		expectedSignedMessage verification.VerifiableMessage
+		message               *v1.SteeringCommandVerification
+		expectedSignedMessage *v1.SteeringCommandVerification
 		isValid               bool
 		expectedError         string
 	}{
@@ -64,7 +63,7 @@ func TestSignVerify(t *testing.T) {
 	}
 	for _, test := range tests {
 		os.Setenv(ImplicitMessageIntegrityKey, test.key)
-		err := verification.SignProto(test.message, []byte(test.key))
+		err := test.message.Sign()
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
