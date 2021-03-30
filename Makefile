@@ -70,3 +70,7 @@ build: build-plugin
 run:
 	$(info [$@] running the example main...)
 	@go run cmd/example/main.go
+
+benchmark:
+	$(info [$@] running Message Integrity Plugin benchmark...)
+	@go test -bench=. ./cmd/example

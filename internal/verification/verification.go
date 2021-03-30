@@ -71,7 +71,6 @@ func SignProto(message VerifiableMessage, key []byte) error {
 	// Assign the generated signature to the message using reflection as it is a VerifiableMessage and not cast to
 	// its exact proto type.
 	message.ProtoReflect().Set(signatureFieldDescriptor, protoreflect.ValueOfBytes(sig))
-	log.Println(message.GetSignature())
 	return nil
 }
 
