@@ -58,12 +58,14 @@ func (g *Plugin) Generate() error {
 		buf.Write([]byte(fmt.Sprintf("package %s\n", file.GoPackageName)))
 
 		buf.Write([]byte(`const ImplicitMessageIntegrityKey = "IMPLICIT_MESSAGE_INTEGRITY_KEY"`))
-		// Go through each message if it has a signature field give it sign and verify methods.
-		hasSignatureField := false
+		hasSignatureFieldFile := false
 		for _, msg := range file.Proto.MessageType {
+			// Go through each message if it has a signature field give it sign and verify methods.
+			hasSignatureField := false
 			for _, field := range msg.GetField() {
 				if strings.Compare(*field.Name, "signature") == 0 {
 					hasSignatureField = true
+					hasSignatureFieldFile = true
 				}
 			}
 			// Only add the signature verification methods if the message has the Signature field.
@@ -85,6 +87,10 @@ func (x *%s) Verify() (bool, error) {
 			}
 
 		}
+		// Skip creating a .messageintegrity.go file if there are no message types which have signatures.
+		if !hasSignatureFieldFile {
+			continue
+		}
 		// Set output file.
 		filename := file.GeneratedFilenamePrefix + ".messageintegrity.go"
 		file := plugin.NewGeneratedFile(filename, ".")
@@ -94,7 +100,6 @@ func (x *%s) Verify() (bool, error) {
 			GoName:       "github.com/einride/protoc-gen-messageintegrity/internal/verification",
 			GoImportPath: "github.com/einride/protoc-gen-messageintegrity/internal/verification",
 		})
-
 		// Write file.
 		if _, err = file.Write(buf.Bytes()); err != nil {
 			return err
@@ -107,5 +112,6 @@ func (x *%s) Verify() (bool, error) {
 		}
 		fmt.Fprint(os.Stdout, string(out))
 	}
+
 	return nil
 }
