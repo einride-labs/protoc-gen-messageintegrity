@@ -1,0 +1,30 @@
+
+syntax = "proto3";
+
+package integrity.v1;
+
+option go_package = "github.com/einride/protoc-gen-messageintegrity/proto/gen/integrity/v1";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+    // Message Integrity Signature options.
+    //
+    // TODO(paul.molloy): This extension has not been registered with
+    //       protobuf-global-extension-registry@google.com.
+    // See: https://chromium.googlesource.com/chromium/src/+/master/third_party/protobuf/docs/options.md
+    MessageIntegritySignature message_integrity_signature = 1090;
+}
+
+// An indicator of if a field is a signature field and if it is required or not.
+enum SignatureBehaviour {
+    SIGNATURE_BEHAVIOUR_UNSPECIFIED = 0; // Don't use, unless to disable the signature from being used.
+    SIGNATURE_BEHAVIOUR_OPTIONAL = 1; // Allow if field does not have a signature.
+    SIGNATURE_BEHAVIOUR_REQUIRED = 2; // Fail if field does not have a signature.
+}
+
+// Message Integrity Signature code generation options.
+message MessageIntegritySignature {
+    // Indicates if MessageIntegrity code generation is enabled for the message and if it is required or optional.
+    SignatureBehaviour behaviour = 2;
+}

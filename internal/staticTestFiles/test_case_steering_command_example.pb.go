@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.25.0
 // 	protoc        v3.13.0
-// source: integrity/v1/steering_command_example.proto
+// source: example/v1/steering_command_example.proto
 
 package verification
 
@@ -166,8 +166,8 @@ func file_integrity_v1_steering_command_example_proto_rawDescGZIP() []byte {
 
 var file_integrity_v1_steering_command_example_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_integrity_v1_steering_command_example_proto_goTypes = []interface{}{
-	(*SteeringCommand)(nil),             // 0: integrity.v1.SteeringCommand
-	(*SteeringCommandVerification)(nil), // 1: integrity.v1.SteeringCommandVerification
+	(*SteeringCommand)(nil),             // 0: example.v1.SteeringCommand
+	(*SteeringCommandVerification)(nil), // 1: example.v1.SteeringCommandVerification
 }
 var file_integrity_v1_steering_command_example_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

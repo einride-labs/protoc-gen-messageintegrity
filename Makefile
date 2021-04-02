@@ -60,7 +60,7 @@ build-plugin:
 .PHONY: buf-generate
 buf-generate: $(buf) $(protoc) $(protoc_gen_go) $(protoc_gen_message_integrity) build-plugin
 	$(info [$@] generating protobuf stubs...)
-	@rm -rf internal/examples/proto/gen
+	@rm -rf proto/gen
 	@$(buf) generate
 
 build: build-plugin

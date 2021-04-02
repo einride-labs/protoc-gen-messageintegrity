@@ -2,7 +2,7 @@
 // versions:
 //  protoc-gen-messageintegrity	v0.1.0
 //  protoc						v3.13.0
-// source: integrity/v1/steering_command_example.proto.
+// source: example/v1/steering_command_example.proto.
 
 package verification
 
