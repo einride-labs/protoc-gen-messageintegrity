@@ -1,7 +1,7 @@
 package main
 
 import (
-	integpb "github.com/einride/protoc-gen-messageintegrity/internal/examples/proto/gen"
+	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
 	"os"

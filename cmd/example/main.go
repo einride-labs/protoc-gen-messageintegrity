@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"log"
 
-	integpb "github.com/einride/protoc-gen-messageintegrity/internal/examples/proto/gen"
+	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 )
 
 // TODO(paulmolloy): A demo of the system will probably be run here.

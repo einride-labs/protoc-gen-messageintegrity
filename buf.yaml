@@ -2,7 +2,7 @@ version: v1beta1
 
 build:
   roots:
-    - internal/examples/proto/src
+    - proto/src
 lint:
   use:
     - DEFAULT

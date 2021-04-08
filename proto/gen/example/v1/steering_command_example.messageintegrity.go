@@ -2,7 +2,7 @@
 // versions:
 //  protoc-gen-messageintegrity	v0.1.0
 //  protoc						v3.13.0
-// source: integrity/v1/steering_command_example.proto.
+// source: example/v1/steering_command_example.proto.
 
 package v1
 
@@ -19,6 +19,16 @@ func (x *SteeringCommandVerification) Sign() error {
 }
 
 func (x *SteeringCommandVerification) Verify() (bool, error) {
+	key := os.Getenv(ImplicitMessageIntegrityKey)
+	return verification.ValidateHMAC(x, []byte(key))
+}
+
+func (x *SteeringCommandVerificationOption) Sign() error {
+	key := os.Getenv(ImplicitMessageIntegrityKey)
+	return verification.SignProto(x, []byte(key))
+}
+
+func (x *SteeringCommandVerificationOption) Verify() (bool, error) {
 	key := os.Getenv(ImplicitMessageIntegrityKey)
 	return verification.ValidateHMAC(x, []byte(key))
 }

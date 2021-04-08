@@ -1,7 +1,7 @@
 package messageintegrity
 
 import (
-	v1 "github.com/einride/protoc-gen-messageintegrity/internal/examples/proto/gen"
+	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
 	"os"
