@@ -74,3 +74,9 @@ run:
 benchmark:
 	$(info [$@] running Message Integrity Plugin benchmark...)
 	@go test -bench=. ./cmd/example
+
+build-integritylint:
+	@go build -o bin/integritylint cmd/integritylint/main.go
+
+integritylint: build-integritylint
+	./bin/integritylint cmd/example/main_test.go
