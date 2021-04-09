@@ -35,6 +35,8 @@ clean:
 go-test:
 	$(info [$@] running Go tests...)
 	@mkdir -p build/coverage
+
+	GO111MODULE=on
 	@go test -short -race -coverprofile=build/coverage/$@.txt -covermode=atomic ./...
 
 .PHONY: go-integration-test
@@ -79,4 +81,4 @@ build-integritylint:
 	@go build -o bin/integritylint cmd/integritylint/main.go
 
 integritylint: build-integritylint
-	./bin/integritylint cmd/example/main_test.go
+	./bin/integritylint internal/integritycheck/testdata/src/a/marshalling.go
