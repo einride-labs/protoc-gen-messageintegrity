@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package example.v1;
 
-import "integrity/v1/message_integrity_signature.proto";
+import "integrity/v1/signature.proto";
 option go_package = "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1";
 message SteeringCommand {
     float steering_angle = 1;
@@ -15,7 +15,7 @@ message SteeringCommandVerification {
 
 message SteeringCommandVerificationOption {
     float steering_angle = 1;
-    bytes signature = 2 [(integrity.v1.message_integrity_signature) = {
+    bytes signature = 2 [(integrity.v1.signature) = {
       behaviour: SIGNATURE_BEHAVIOUR_REQUIRED,
         }];
 }

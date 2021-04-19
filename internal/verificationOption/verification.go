@@ -91,7 +91,7 @@ func retrieveSignatureFieldDescriptor(message VerifiableMessage) (protoreflect.F
 			continue // The signature can only be a bytes field, ignore everything else.
 		}
 		opts := fd.Options().(*descriptorpb.FieldOptions)
-		sigOption, ok := proto.GetExtension(opts, integritypb.E_MessageIntegritySignature).(*integritypb.MessageIntegritySignature)
+		sigOption, ok := proto.GetExtension(opts, integritypb.E_Signature).(*integritypb.Signature)
 		if !ok ||  sigOption.GetBehaviour() == integritypb.SignatureBehaviour_SIGNATURE_BEHAVIOUR_UNSPECIFIED {
 			// Failed to find or cast a MessageIntegrityOption, keep looking.
 			continue
