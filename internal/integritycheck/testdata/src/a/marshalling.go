@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 )
+
 func main() {
 	integrityVerificationExample()
 }
