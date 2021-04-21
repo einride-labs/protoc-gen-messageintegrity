@@ -46,8 +46,8 @@ func TestDecodeFileDesc(t *testing.T) {
 		0x65, 0x6e, 0x2f, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70,
 		0x72, 0x6f, 0x74, 0x6f, 0x33,
 	}
-	expectedProtoMap := map[string]bool {
-		"SteeringCommandVerificationOption": true,
+	expectedProtoMap := map[string]struct{} {
+		"SteeringCommandVerificationOption": *new(struct{}),
 	}
 	expectedFileName := protoreflect.Name("v1")
 

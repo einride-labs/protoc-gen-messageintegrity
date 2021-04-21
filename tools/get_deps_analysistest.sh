@@ -6,7 +6,6 @@ mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-mess
 cp -r proto/gen/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/proto/gen
 cp -r internal/verification/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verification
 cp -r internal/verificationOption/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationOption
-#rm -r internal/integritycheck/testdata/src/github.com/golang/protobuf/
 
 if [[ ! -d internal/integritycheck/testdata/src/github.com/golang/protobuf ]]
 then
