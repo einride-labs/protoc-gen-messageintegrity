@@ -35,8 +35,7 @@ clean:
 go-test: buf-generate
 	$(info [$@] running Go tests...)
 	@mkdir -p build/coverage
-
-	GO111MODULE=on
+	tools/get_deps_analysistest.sh
 	@go test -short -race -coverprofile=build/coverage/$@.txt -covermode=atomic ./...
 
 .PHONY: go-integration-test
