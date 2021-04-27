@@ -6,6 +6,7 @@ import (
 	"fmt"
 	integritypb "github.com/einride/protoc-gen-messageintegrity/proto/gen/integrity/v1"
 	"go/ast"
+	"go/token"
 	"go/types"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/loader"
@@ -41,8 +42,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	for _, file := range pass.Files {
 		// Map of proto message types that have implicit message integrity enabled so they can be looked up when
 		// Marshal and unmarshal calls are found.
-		p := protoIntegrityChecker{typeInfo: pass.TypesInfo}
-		protoTypes := make(map[types.Type]bool)
+		p := protoIntegrityChecker{typeInfo: pass.TypesInfo, protoTypes: make(map[types.Type]struct{})}
 		ast.Inspect(file, func(n ast.Node) bool {
 			im, ok := n.(*ast.ImportSpec)
 			if !ok {
@@ -69,30 +69,34 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				if pn.Path() != "google.golang.org/protobuf/runtime/protoimpl" {
 					continue
 				}
-				integrityProtosList, err := p.findIntegrityProtos(prog.InitialPackages())
+				integrityProtosMap, err := p.findIntegrityProtos(prog.InitialPackages())
 				if err != nil {
 					log.Fatal(err)
 				}
-				for _, t := range integrityProtosList {
-					protoTypes[t] = true
+				for t := range integrityProtosMap {
+					tname := types.NewTypeName(token.NoPos, prog.Package(path).Pkg, t, nil)
+					// Make it a as the proto.(Un)marshal calls take pointers so its easier for the map lookup.
+					nt := types.NewPointer(types.NewNamed(tname, nil, nil))
+					p.protoTypes[nt] = *new(struct{})
 					to := p.typeInfo.ObjectOf(im.Name)
-					pass.ExportObjectFact(to, &integrityFact{t: t})
+					pass.ExportObjectFact(to, &integrityFact{t: *nt})
 				}
 			}
 			return true
 		})
-		// Now I have a list of all of the types find Un-marshals of.
-		ast.Inspect(file, parseUnmarshals)
+		// Now I have a list of all of the types find (Un)marshals of.
+		ast.Inspect(file, p.parseProtoMarshals)
 	}
 	return nil, nil
 }
 
 type protoIntegrityChecker struct {
 	typeInfo *types.Info
+	protoTypes map[types.Type]struct{}
 }
 
-func (p *protoIntegrityChecker) findIntegrityProtos(packages []*loader.PackageInfo) ([]types.Type, error) {
-	var integrityProtoTypes []types.Type
+func (p *protoIntegrityChecker) findIntegrityProtos(packages []*loader.PackageInfo) (map[string]struct{}, error) {
+	integrityProtoTypes := make(map[string]struct{})
 	for _, p := range packages {
 		for _, f := range p.Files {
 			fmt.Println(f.Scope)
@@ -138,7 +142,8 @@ func (p *protoIntegrityChecker) findIntegrityProtos(packages []*loader.PackageIn
 						if !ok {
 							return nil, fmt.Errorf("proto Message object %v could not be converted to a type", k)
 						}
-						integrityProtoTypes = append(integrityProtoTypes, t)
+						fmt.Println(t)
+						integrityProtoTypes[k] = *new(struct{})
 					}
 				}
 			}
@@ -147,8 +152,50 @@ func (p *protoIntegrityChecker) findIntegrityProtos(packages []*loader.PackageIn
 	return integrityProtoTypes, nil
 }
 
-// Find Unmarshals of integrity enabled protos.
-func parseUnmarshals(n ast.Node) bool {
+// Find (Un)Marshals of integrity enabled protos.
+func  (p *protoIntegrityChecker) parseProtoMarshals(n ast.Node) bool {
+	e, ok := n.(ast.Expr)
+	if !ok {
+		return true
+	}
+	callExpr, ok := e.(*ast.CallExpr)
+	if !ok {
+		return true
+	}
+	sel, ok := callExpr.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return true
+	}
+
+	// TODO(paulmolloy): Change to check the underlying src of the ident encase the import name was overridden to something else.
+	if strings.Compare(getIdent(sel.X).Name, "proto") != 0 {
+		return true
+	}
+	args := callExpr.Args
+	var protoExpr ast.Expr
+	switch sel.Sel.Name {
+	case "Marshal":
+		// Want 1st of 1 params.
+		if len(args) != 1 {
+			return true
+		}
+		protoExpr = args[0]
+		// TODO(paulmolloy): Check if Sign is called at the end of the expression in the case its not an ident.
+		fmt.Println("Checking against:")
+		for pt := range p.protoTypes {
+			fmt.Println(pt)
+		}
+	case "Unmarshal":
+		// Want 2nd of 2 params.
+		if len(args) != 2 {
+			return true
+		}
+		protoExpr = args[1]
+	default:
+		// It's some other func from proto and we don't care.
+		return true
+	}
+	fmt.Println(protoExpr)
 	return true
 }
 
@@ -180,41 +227,14 @@ func findSigRequiredProtos(fd protoreflect.FileDescriptor) map[string]struct{} {
 	return protoMap
 }
 
-// reads a constant byte array in a ast.Composite lit and turns it into a runtime byte array.
-func parseByteSlice(v ast.Expr) ([]byte, error) {
-	// Sneakily I can parse this byte array into the field descriptor proto at run time.
-	cl, ok := v.(*ast.CompositeLit)
-	if !ok {
-		return nil, errors.New("not a comp lit")
-	}
-	if cl.Elts == nil {
-		return nil, errors.New("no elements")
-	}
-	var fieldDescRaw []byte
-	for _, e := range cl.Elts {
-		v, ok := e.(*ast.BasicLit)
-		if !ok {
-			continue
-		}
-		// I feel like this should work with bitset=8 but I get failed to parse 0x92 so 16
-		// bits it is.
-		ib, err := strconv.ParseInt(v.Value, 0, 16)
-		if err != nil {
-			return nil, err
-		}
-		b := byte(ib)
-		fieldDescRaw = append(fieldDescRaw, b)
-	}
-	return fieldDescRaw, nil
-}
-
 // integrityFact is a fact associated with types that are Protocol buffer Messages with the message integrity
 // option enabled.
 type integrityFact struct {
-	t types.Type
+	t types.Pointer
 }
 
 func (i *integrityFact) String() string {
-	return fmt.Sprintf("found proto message type: %v... with message integrity enabled", i.t.String()[:70])
+	// analysistest does not like "*"
+	return fmt.Sprintf("found proto message type: %v with message integrity enabled", i.t.String()[1:])
 }
 func (*integrityFact) AFact() {}

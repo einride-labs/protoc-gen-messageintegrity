@@ -1,7 +1,7 @@
 package main
 
 import (
-	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1" // want integpb:`found proto message type: struct{state google.golang.org/protobuf/internal/impl.MessageState; si... with message integrity enabled`
+	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1" // want integpb:`found proto message type: github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1.SteeringCommandVerificationOption with message integrity enabled`
 	"google.golang.org/protobuf/proto"
 	"log"
 	"os"
