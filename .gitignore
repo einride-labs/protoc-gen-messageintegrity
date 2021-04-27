@@ -6,3 +6,6 @@ credentials/*.json
 node_modules/
 .swp
 gen/*
+internal/integritycheck/testdata/src/github.com
+internal/integritycheck/testdata/src/google.golang.org
+

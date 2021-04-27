@@ -32,9 +32,10 @@ clean:
 	@rm -rf build
 
 .PHONY: go-test
-go-test:
+go-test: buf-generate
 	$(info [$@] running Go tests...)
 	@mkdir -p build/coverage
+	tools/get_deps_analysistest.sh
 	@go test -short -race -coverprofile=build/coverage/$@.txt -covermode=atomic ./...
 
 .PHONY: go-integration-test
@@ -79,4 +80,4 @@ build-integritylint:
 	@go build -o bin/integritylint cmd/integritylint/main.go
 
 integritylint: build-integritylint
-	./bin/integritylint cmd/example/main_test.go
+	./bin/integritylint internal/integritycheck/testdata/src/a/marshalling.go
