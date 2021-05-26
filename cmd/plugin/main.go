@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	var plugin messageintegrity.Plugin
+	plugin := messageintegrity.Plugin{Version: messageintegrity.VerificationOption}
+
 	if err := plugin.Generate(); err != nil {
 		log.Fatal(err)
 	}

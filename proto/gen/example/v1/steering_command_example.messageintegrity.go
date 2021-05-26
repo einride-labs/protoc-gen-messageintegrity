@@ -7,7 +7,7 @@
 package v1
 
 import (
-	verification "github.com/einride/protoc-gen-messageintegrity/internal/verification"
+	verificationOption "github.com/einride/protoc-gen-messageintegrity/internal/verificationOption"
 	os "os"
 )
 
@@ -15,20 +15,20 @@ const ImplicitMessageIntegrityKey = "IMPLICIT_MESSAGE_INTEGRITY_KEY"
 
 func (x *SteeringCommandVerification) Sign() error {
 	key := os.Getenv(ImplicitMessageIntegrityKey)
-	return verification.SignProto(x, []byte(key))
+	return verificationOption.SignProto(x, []byte(key))
 }
 
 func (x *SteeringCommandVerification) Verify() (bool, error) {
 	key := os.Getenv(ImplicitMessageIntegrityKey)
-	return verification.ValidateHMAC(x, []byte(key))
+	return verificationOption.ValidateHMAC(x, []byte(key))
 }
 
 func (x *SteeringCommandVerificationOption) Sign() error {
 	key := os.Getenv(ImplicitMessageIntegrityKey)
-	return verification.SignProto(x, []byte(key))
+	return verificationOption.SignProto(x, []byte(key))
 }
 
 func (x *SteeringCommandVerificationOption) Verify() (bool, error) {
 	key := os.Getenv(ImplicitMessageIntegrityKey)
-	return verification.ValidateHMAC(x, []byte(key))
+	return verificationOption.ValidateHMAC(x, []byte(key))
 }

@@ -9,11 +9,20 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"strings"
+)
+
+type packageVersion int
+
+const (
+	VerificationSignatureField packageVersion = iota
+	VerificationOption
 )
 
 type Plugin struct {
 	*protogen.Plugin
+	Version packageVersion
 }
 
 func (g *Plugin) Generate() error {
@@ -40,6 +49,9 @@ func (g *Plugin) Generate() error {
 	}
 	// Iterate through the file structs from protoc.
 	for _, file := range plugin.Files {
+		if strings.HasSuffix(file.Desc.Path(), "integrity/v1/message_integrity_signature.proto") {
+			continue
+		}
 		// Generate code in here to a buffer.
 		var buf bytes.Buffer
 		// Write autogen warning.
@@ -58,6 +70,16 @@ func (g *Plugin) Generate() error {
 		buf.Write([]byte(fmt.Sprintf("package %s\n", file.GoPackageName)))
 
 		buf.Write([]byte(`const ImplicitMessageIntegrityKey = "IMPLICIT_MESSAGE_INTEGRITY_KEY"`))
+
+		packageName := "verification"
+		switch g.Version {
+		case VerificationSignatureField:
+			packageName = "verification"
+		case VerificationOption:
+			packageName = "verificationOption"
+		default:
+			log.Fatal("unknown package verification package name")
+		}
 		hasSignatureFieldFile := false
 		for _, msg := range file.Proto.MessageType {
 			// Go through each message if it has a signature field give it sign and verify methods.
@@ -75,15 +97,15 @@ func (g *Plugin) Generate() error {
 
 func (x *%s) Sign() error {
 	key := os.Getenv(ImplicitMessageIntegrityKey)
-	return verification.SignProto(x, []byte(key))
+	return %v.SignProto(x, []byte(key))
 }
 
 func (x *%s) Verify() (bool, error) {
 	key := os.Getenv(ImplicitMessageIntegrityKey)
-	return verification.ValidateHMAC(x, []byte(key))
+	return %v.ValidateHMAC(x, []byte(key))
 }
 
-`, *msg.Name, *msg.Name)))
+`, *msg.Name, packageName, *msg.Name, packageName)))
 			}
 
 		}
@@ -95,10 +117,11 @@ func (x *%s) Verify() (bool, error) {
 		filename := file.GeneratedFilenamePrefix + ".messageintegrity.go"
 		file := plugin.NewGeneratedFile(filename, ".")
 		file.QualifiedGoIdent(protogen.GoIdent{GoName: "os", GoImportPath: "os"})
-		file.QualifiedGoIdent(protogen.GoIdent{
 
-			GoName:       "github.com/einride/protoc-gen-messageintegrity/internal/verification",
-			GoImportPath: "github.com/einride/protoc-gen-messageintegrity/internal/verification",
+		importPath := path.Join("github.com/einride/protoc-gen-messageintegrity/internal/", packageName)
+		file.QualifiedGoIdent(protogen.GoIdent{
+			GoName:       importPath,
+			GoImportPath: protogen.GoImportPath(importPath),
 		})
 		// Write file.
 		if _, err = file.Write(buf.Bytes()); err != nil {
