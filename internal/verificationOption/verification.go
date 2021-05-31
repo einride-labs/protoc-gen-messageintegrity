@@ -103,7 +103,8 @@ func retrieveSignatureFieldDescriptor(message VerifiableMessage) (protoreflect.F
 	return nil, errors.New("failed to find any message integrity signature field in proto")
 }
 
-func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error) {
+// Marshal the message without a signature so that a sig can be generated for it.
+func prepMessageForSigning(message VerifiableMessage) ([]byte, error) {
 	if message == nil {
 		return nil, errors.New("message was nil")
 	}
@@ -111,7 +112,6 @@ func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error
 	if err != nil {
 		return nil, err
 	}
-
 	// Nil out the sig using reflection.
 	message.ProtoReflect().Clear(signatureFieldDescriptor)
 	// Marshal the message without a signature so that a sig can be generated for it.
@@ -119,7 +119,15 @@ func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal proto before signing: %v", err)
 	}
-	if _, err = mac.Write(marshalled); err != nil {
+	return marshalled, nil
+}
+
+func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error) {
+	data, err := prepMessageForSigning(message)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal proto before signing: %v", err)
+	}
+	if _, err = mac.Write(data); err != nil {
 		return nil, err
 	}
 	// Return the generated signature.

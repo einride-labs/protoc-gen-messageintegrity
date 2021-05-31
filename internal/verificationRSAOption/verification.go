@@ -2,7 +2,9 @@ package verificationoptionrsa
 
 import (
 	"bytes"
+	"crypto"
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
@@ -18,6 +20,15 @@ import (
 	"log"
 	"os"
 	"path"
+)
+
+type KeyID string
+
+type signatureProtocol int
+
+const (
+	HMACSHA256 signatureProtocol = iota
+	RSAPKCS1v15SHA256
 )
 
 const ImplicitMessageIntegrityKey = "IMPLICIT_MESSAGE_INTEGRITY_KEY"
@@ -77,6 +88,11 @@ func SignPKCS1v15(message VerifiableMessage, key []byte) error {
 	}
 	mac := hmac.New(sha256.New, key)
 	sig, err := calculateSignature(message, mac)
+	if err != nil {
+		return err
+	}
+	// Stub call for linter.
+	_, err = calculateSignaturePKCS1v15(message, &rsa.PrivateKey{})
 	if err != nil {
 		return err
 	}
@@ -165,7 +181,8 @@ func retrieveSignatureFieldDescriptor(message VerifiableMessage) (protoreflect.F
 	return nil, errors.New("failed to find any message integrity signature field in proto")
 }
 
-func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error) {
+// Marshal the message without a signature so that a sig can be generated for it.
+func prepMessageForSigning(message VerifiableMessage) ([]byte, error) {
 	if message == nil {
 		return nil, errors.New("message was nil")
 	}
@@ -173,7 +190,6 @@ func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error
 	if err != nil {
 		return nil, err
 	}
-
 	// Nil out the sig using reflection.
 	message.ProtoReflect().Clear(signatureFieldDescriptor)
 	// Marshal the message without a signature so that a sig can be generated for it.
@@ -181,14 +197,37 @@ func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal proto before signing: %v", err)
 	}
-	if _, err = mac.Write(marshalled); err != nil {
+	return marshalled, nil
+}
+
+func calculateSignature(message VerifiableMessage, mac hash.Hash) ([]byte, error) {
+	data, err := prepMessageForSigning(message)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal proto before signing: %v", err)
+	}
+	if _, err = mac.Write(data); err != nil {
 		return nil, err
 	}
 	// Return the generated signature.
 	return mac.Sum(nil), nil
 }
 
-func FetchPrivateKey(keyID string) (*rsa.PrivateKey, error) {
+func calculateSignaturePKCS1v15(message VerifiableMessage, privateKey *rsa.PrivateKey) ([]byte, error) {
+	data, err := prepMessageForSigning(message)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal proto before signing: %v", err)
+	}
+	hashed := sha256.Sum256(data)
+	signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed[:])
+	if err != nil {
+		return nil, err
+	}
+	// Return the generated signature.
+	return signature, nil
+}
+
+
+func FetchPrivateKey(keyID KeyID) (*rsa.PrivateKey, error) {
 	fileName := fmt.Sprintf("message_integrity_%v_private.pem", keyID)
 	keyBlock, err := FetchKeyBlock(fileName)
 	if err != nil {
@@ -201,7 +240,7 @@ func FetchPrivateKey(keyID string) (*rsa.PrivateKey, error) {
 	return parsedKey, err
 }
 
-func FetchPublicKey(keyID string) (*rsa.PublicKey, error) {
+func FetchPublicKey(keyID KeyID) (*rsa.PublicKey, error) {
 	fileName := fmt.Sprintf("message_integrity_%v_public.pem", keyID)
 	keyBlock, err := FetchKeyBlock(fileName)
 	if err != nil {

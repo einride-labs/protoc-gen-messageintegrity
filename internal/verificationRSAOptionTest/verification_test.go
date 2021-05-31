@@ -18,7 +18,7 @@ import (
 
 func TestCreatePKCS1(t *testing.T) {
 	tests := []struct {
-		keyID         string
+		keyID         verificationoptionrsa.KeyID
 		length        int
 		expectedError string
 	}{
@@ -46,21 +46,20 @@ func TestCreatePKCS1(t *testing.T) {
 		}
 		log.Println(pubKey)
 	}
-
 }
 
 func TestParsePKCS1(t *testing.T) {
 	tests := []struct {
-		key_id        string
+		keyID         verificationoptionrsa.KeyID
 		length        int
 		expectedError string
 	}{
-		{key_id: "test_id_1", length: 2048, expectedError: ""},
-		{key_id: "test_id_2", length: 4096, expectedError: ""},
+		{keyID: "test_id_1", length: 2048, expectedError: ""},
+		{keyID: "test_id_2", length: 4096, expectedError: ""},
 	}
 
 	for _, test := range tests {
-		err := createRSAKeyPair(test.key_id, test.length)
+		err := createRSAKeyPair(test.keyID, test.length)
 
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("error actual error: %v, expectedError: %v", err, test.expectedError)
@@ -69,7 +68,7 @@ func TestParsePKCS1(t *testing.T) {
 
 }
 
-func createRSAKeyPair(keyID string, length int) error {
+func createRSAKeyPair(keyID verificationoptionrsa.KeyID, length int) error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return err
