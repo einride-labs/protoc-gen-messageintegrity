@@ -13,7 +13,7 @@ extend google.protobuf.FieldOptions {
     // TODO(paul.molloy): This extension has not been registered with
     //       protobuf-global-extension-registry@google.com.
     // See: https://chromium.googlesource.com/chromium/src/+/master/third_party/protobuf/docs/options.md
-    MessageIntegritySignature message_integrity_signature = 1090;
+    Signature signature = 1090;
 }
 
 // An indicator of if a field is a signature field and if it is required or not.
@@ -23,8 +23,8 @@ enum SignatureBehaviour {
     SIGNATURE_BEHAVIOUR_REQUIRED = 2; // Fail if field does not have a signature.
 }
 
-// Message Integrity Signature code generation options.
-message MessageIntegritySignature {
+// Signature option for message integrity code generation.
+message Signature {
     // Indicates if MessageIntegrity code generation is enabled for the message and if it is required or optional.
     SignatureBehaviour behaviour = 2;
 }
