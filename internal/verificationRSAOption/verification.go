@@ -64,6 +64,9 @@ func ValidatePKCS1v15(message VerifiableMessage, keyID KeyID) (bool, error) {
 		// Returns an error if they don't match.
 		_, err = verifySignaturePKCS1v15(message, publicKey, receivedSig)
 		if err != nil {
+			if err.Error() == "crypto/rsa: verification error" {
+				return false, nil
+			}
 			return false, err
 		}
 		return true, nil
@@ -111,7 +114,6 @@ func SignPKCS1v15(message VerifiableMessage, keyID KeyID) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println(sig)
 
 	case HMACSHA256:
 	default:
