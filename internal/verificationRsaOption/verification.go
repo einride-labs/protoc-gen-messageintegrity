@@ -1,4 +1,4 @@
-package verificationoptionrsa
+package verificationrsaoption
 
 import (
 	"bytes"

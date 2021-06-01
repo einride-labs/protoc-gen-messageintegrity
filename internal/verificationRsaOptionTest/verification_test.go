@@ -7,7 +7,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verificationOption"
-	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationRSAOption"
+	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
