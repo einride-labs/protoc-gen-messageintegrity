@@ -26,8 +26,8 @@ func SetupKeyPair(keyID KeyID) error {
 		return err
 	}
 	// We aren't running verificationRSAOptionTest so its probably just running from the make file i.e. the main example.
-	if !strings.HasSuffix(pwd, "internal/verificationRSAOptionTest") {
-		srcTestKeysDir = path.Join(".", "internal/verificationRSAOptionTest/test-keys")
+	if !strings.HasSuffix(pwd, "internal/verificationRsaOptionTest") {
+		srcTestKeysDir = path.Join(".", "internal/verificationRsaOptionTest/test-keys")
 	}
 	dstTestKeysDir := path.Join(home, DefaultKeysDir)
 	keyName := fmt.Sprintf("message_integrity_%v", keyID)
