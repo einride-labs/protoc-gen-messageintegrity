@@ -1,5 +1,6 @@
 package verificationoptionirsaTest
 
+
 import (
 	"crypto/rand"
 	"crypto/rsa"
@@ -15,16 +16,15 @@ import (
 	"path"
 	"testing"
 )
-
 func TestCreatePKCS1(t *testing.T) {
 	tests := []struct {
 		keyID         verificationoptionrsa.KeyID
 		length        int
 		expectedError string
 	}{
-		{keyID: "test_verification_id_1", length: 2048, expectedError: ""},
-		{keyID: "test_verification_id_2", length: 4096, expectedError: ""},
-		{keyID: "test_verification_id_3", length: 2048, expectedError: ""},
+		{keyID: "test_create_id_1", length: 2048, expectedError: ""},
+		{keyID: "test_create_id_2", length: 4096, expectedError: ""},
+		{keyID: "test_create_id_3", length: 2048, expectedError: ""},
 	}
 
 	for _, test := range tests {
