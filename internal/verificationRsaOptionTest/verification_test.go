@@ -1,6 +1,5 @@
 package verificationoptionirsaTest
 
-
 import (
 	"crypto/rand"
 	"crypto/rsa"
@@ -16,6 +15,7 @@ import (
 	"path"
 	"testing"
 )
+
 func TestCreatePKCS1(t *testing.T) {
 	tests := []struct {
 		keyID         verificationoptionrsa.KeyID

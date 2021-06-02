@@ -25,11 +25,17 @@ func SetupKeyPair(keyID KeyID) error {
 	if err != nil {
 		return err
 	}
-	// We aren't running verificationRSAOptionTest so its probably just running from the make file i.e. the main example.
-	if !strings.HasSuffix(pwd, "internal/verificationRsaOptionTest") {
+	// Cases where we aren't running verificationRSAOptionTest.
+	// We're running from the plugin folder.
+	if strings.HasSuffix(pwd,"internal/messageintegrity") {
+		srcTestKeysDir = "../verificationRsaOptionTest/test-keys"
+	}
+	// We're running from the repo root.
+	if strings.HasSuffix(pwd, "thesis-implicit-message-integrity") {
 		srcTestKeysDir = path.Join(".", "internal/verificationRsaOptionTest/test-keys")
 	}
 	dstTestKeysDir := path.Join(home, DefaultKeysDir)
+	_ = os.Mkdir(dstTestKeysDir, os.ModeDir)
 	keyName := fmt.Sprintf("message_integrity_%v", keyID)
 	publicKeyName := fmt.Sprintf("%v_public.pem", keyName)
 	privateKeyName := fmt.Sprintf("%v_private.pem", keyName)

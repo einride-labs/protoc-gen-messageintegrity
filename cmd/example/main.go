@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
+	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
-
-	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
+	"os"
 )
 
 // TODO(paulmolloy): A demo of the system will probably be run here.
@@ -25,13 +26,35 @@ func main() {
 	fmt.Printf("The steering angle is: %f", receivedMsg.SteeringAngle)
 
 	// Most basic hmac integrity verification by adding a field "signature" to the proto.
-	sigSteeringCommand := integpb.SteeringCommandVerification{SteeringAngle: 5.0}
+	// Fails to sign if the Option version of verification is used by the generation.
+	sigSteeringCommand := integpb.SteeringCommandVerification{SteeringAngle: 6.0}
 	if err = sigSteeringCommand.Sign(); err != nil {
-		log.Fatalf("failed to sign proto: %v", err)
+		log.Printf("Failed to sign proto: %v", err)
 	}
 	isValid, err := sigSteeringCommand.Verify()
 	if err != nil {
+		log.Printf("failed to sign proto: %v\n", err)
+	}
+	fmt.Printf("Proto message signature isValid: %v\n", isValid)
+
+	// RSA Example
+
+
+	keyID := verificationoptionrsa.KeyID("test_verification_id_1")
+
+	fmt.Printf("Key id : %v\n", keyID)
+	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))
+	if err := verificationoptionrsa.SetupKeyPair(keyID); err != nil {
+		log.Fatalf("failed to setup keypair for example: %v\n", err)
+	}
+	steeringCmd := integpb.SteeringCommandVerificationOption{SteeringAngle: 5.0}
+	if err := steeringCmd.Sign(); err != nil {
 		log.Fatalf("failed to sign proto: %v", err)
 	}
-	fmt.Printf("Proto message signature isValid: %v", isValid)
+	isValid, err = steeringCmd.Verify()
+	if err != nil {
+		log.Fatalf("faild to verify proto: %v\n", err)
+	}
+	fmt.Printf("Proto message signature isValid: %v\n", isValid)
+
 }
