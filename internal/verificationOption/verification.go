@@ -113,9 +113,10 @@ func prepMessageForSigning(message VerifiableMessage) ([]byte, error) {
 		return nil, err
 	}
 	// Nil out the sig using reflection.
-	message.ProtoReflect().Clear(signatureFieldDescriptor)
+	messageCopy := proto.Clone(message)
+	messageCopy.ProtoReflect().Clear(signatureFieldDescriptor)
 	// Marshal the message without a signature so that a sig can be generated for it.
-	marshalled, err := proto.Marshal(message)
+	marshalled, err := proto.Marshal(messageCopy)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal proto before signing: %v", err)
 	}
