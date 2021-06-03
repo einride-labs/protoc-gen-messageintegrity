@@ -162,7 +162,7 @@ func findSigRequiredProtos(fd protoreflect.FileDescriptor) map[string]struct{} {
 		for i := 0; i < fields.Len(); i++ {
 			fd := fields.Get(i)
 			opts := fd.Options().(*descriptorpb.FieldOptions)
-			sigOption, ok := proto.GetExtension(opts, integritypb.E_MessageIntegritySignature).(*integritypb.MessageIntegritySignature)
+			sigOption, ok := proto.GetExtension(opts, integritypb.E_Signature).(*integritypb.Signature)
 			if !ok || fd.Kind() != protoreflect.BytesKind {
 				continue // The signature can only be a bytes field, ignore everything else.
 			} else if sigOption.GetBehaviour() != integritypb.SignatureBehaviour_SIGNATURE_BEHAVIOUR_REQUIRED &&
