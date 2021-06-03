@@ -1,9 +1,7 @@
 package main
 
 import (
-	"crypto/rand"
 	"fmt"
-	"github.com/einride/protoc-gen-messageintegrity/internal/verification"
 	"google.golang.org/protobuf/proto"
 	"log"
 
@@ -27,17 +25,11 @@ func main() {
 	fmt.Printf("The steering angle is: %f", receivedMsg.SteeringAngle)
 
 	// Most basic hmac integrity verification by adding a field "signature" to the proto.
-	// Generate a key
-	key := make([]byte, 64)
-	_, err = rand.Read(key)
-	if err != nil {
-		log.Fatalf("failed to generate a secret key: %v", err)
-	}
 	sigSteeringCommand := integpb.SteeringCommandVerification{SteeringAngle: 5.0}
-	if err = verification.SignProto(&sigSteeringCommand, key); err != nil {
+	if err = sigSteeringCommand.Sign(); err != nil {
 		log.Fatalf("failed to sign proto: %v", err)
 	}
-	isValid, err := verification.ValidateHMAC(&sigSteeringCommand, key)
+	isValid, err := sigSteeringCommand.Verify()
 	if err != nil {
 		log.Fatalf("failed to sign proto: %v", err)
 	}
