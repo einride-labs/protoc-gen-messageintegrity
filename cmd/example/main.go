@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/einride/protoc-gen-messageintegrity/internal/keypairTestUtils"
 	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
 	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
@@ -29,11 +30,11 @@ func main() {
 	// Fails to sign if the Option version of verification is used by the generation.
 	sigSteeringCommand := integpb.SteeringCommandVerification{SteeringAngle: 6.0}
 	if err = sigSteeringCommand.Sign(); err != nil {
-		log.Printf("Failed to sign proto: %v", err)
+		log.Fatalf("Failed to sign proto: %v", err)
 	}
 	isValid, err := sigSteeringCommand.Verify()
 	if err != nil {
-		log.Printf("failed to sign proto: %v\n", err)
+		log.Fatalf("failed to sign proto: %v\n", err)
 	}
 	fmt.Printf("Proto message signature isValid: %v\n", isValid)
 
@@ -44,7 +45,7 @@ func main() {
 
 	fmt.Printf("Key id : %v\n", keyID)
 	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))
-	if err := verificationoptionrsa.SetupKeyPair(keyID); err != nil {
+	if err := keypairTestUtils.SetupKeyPair(keyID); err != nil {
 		log.Fatalf("failed to setup keypair for example: %v\n", err)
 	}
 	steeringCmd := integpb.SteeringCommandVerificationOption{SteeringAngle: 5.0}

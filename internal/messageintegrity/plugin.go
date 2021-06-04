@@ -13,16 +13,16 @@ import (
 	"strings"
 )
 
-type packageVersion int
+type PackageVersion int
 const (
-	Verification packageVersion = iota
+	Verification PackageVersion = iota
 	VerificationOption
 	VerificationRSAOption
 )
 
 type Plugin struct {
 	*protogen.Plugin
-	Version packageVersion
+	Version PackageVersion
 }
 
 func (g *Plugin) Generate() error {
@@ -49,7 +49,7 @@ func (g *Plugin) Generate() error {
 	}
 	// Iterate through the file structs from protoc.
 	for _, file := range plugin.Files {
-		if file.Desc.Path() == "integrity/v1/message_integrity_signature.proto" {
+		if strings.HasSuffix(file.Desc.Path(), "integrity/v1/message_integrity_signature.proto") {
 			continue
 		}
 		// Generate code in here to a buffer.

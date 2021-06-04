@@ -1,6 +1,7 @@
 package messageintegrity
 
 import (
+	"github.com/einride/protoc-gen-messageintegrity/internal/keypairTestUtils"
 	verificationRSAOption "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
@@ -65,7 +66,7 @@ func TestSign(t *testing.T) {
 	for _, test := range tests {
 		os.Setenv(ImplicitMessageIntegrityKey, test.key)
 		os.Setenv(ImplicitMessageIntegrityKeyID, string(test.keyID))
-		_ = verificationRSAOption.SetupKeyPair(test.keyID)
+		_ = keypairTestUtils.SetupKeyPair(test.keyID)
 		err := test.message.Sign()
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
@@ -144,7 +145,7 @@ func TestSignVerify(t *testing.T) {
 	for _, test := range tests {
 		os.Setenv(ImplicitMessageIntegrityKey, test.key)
 		os.Setenv(ImplicitMessageIntegrityKeyID, string(test.keyID))
-		_ = verificationRSAOption.SetupKeyPair(test.keyID)
+		_ = keypairTestUtils.SetupKeyPair(test.keyID)
 		err := test.message.Sign()
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())

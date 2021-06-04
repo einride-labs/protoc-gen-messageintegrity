@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"github.com/einride/protoc-gen-messageintegrity/internal/keypairTestUtils"
 	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verificationOption"
 	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
@@ -252,7 +253,7 @@ func TestSigningRSA(t *testing.T) {
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		_ = verificationoptionrsa.SetupKeyPair(test.keyID)
+		_ = keypairTestUtils.SetupKeyPair(test.keyID)
 		err := verificationoptionrsa.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
@@ -316,7 +317,7 @@ func TestSignatureVerificationRSA(t *testing.T) {
 
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		_ = verificationoptionrsa.SetupKeyPair(test.keyID)
+		_ = keypairTestUtils.SetupKeyPair(test.keyID)
 		// Don't check error as we want to test robustness of ValidateHMAC.
 		_ = verificationoptionrsa.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
