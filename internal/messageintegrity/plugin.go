@@ -18,6 +18,7 @@ const (
 	Verification packageVersion = iota
 	VerificationOption
 	VerificationRSAOption
+	VerificationECDSAOption
 )
 
 type Plugin struct {
@@ -90,6 +91,8 @@ func (x *%s) Verify() (bool, error) {
 			packageName = "verification"
 		case VerificationOption:
 			packageName = "verificationOption"
+		case VerificationECDSAOption:
+			log.Fatal("Unimplemented")
 		case VerificationRSAOption:
 			packageName = "verificationRsaOption"
 			buf.Write([]byte(`
