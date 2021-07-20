@@ -1,8 +1,8 @@
 package verificationTest
 
 import (
-	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"github.com/einride/protoc-gen-messageintegrity/internal/verification"
+	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"gotest.tools/v3/assert"
 	"log"
