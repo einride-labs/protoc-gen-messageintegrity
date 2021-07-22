@@ -28,12 +28,12 @@ message SteeringCommand {
 This will create a file proto_file_name.message_integrity.go with Sign() and Verify() receiver methods beside the proto_file_name.pb.go:
 ```go
 ...
-func (x *SteeringCommandVerification) Sign() error {
+func (x *SteeringCommand) Sign() error {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
 	return verificationRsaOption.SignPKCS1v15(x, verificationRsaOption.KeyID(keyID))
 }
 
-func (x *SteeringCommandVerification) Verify() (bool, error) {
+func (x *SteeringCommand) Verify() (bool, error) {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
 	return verificationRsaOption.ValidatePKCS1v15(x, verificationRsaOption.KeyID(keyID))
 }
