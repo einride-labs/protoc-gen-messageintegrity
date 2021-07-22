@@ -12,8 +12,8 @@ go get -u github.com/einride/protoc-gen-messageintegrity
 ```
 
 # Running
-``` make 
-buf-generate: $(buf) $(protoc) $(protoc_gen_go) $(protoc_gen_message_integrity) build-plugin
+``` bash
+protoc --proto_path=src --go_out=gen --messageintegrity_out=gen --go_opt=paths=source_relative src/example/v1/steering_command_example.proto
 ```
 ## Example
 By adding the custom option integrity.v1.signature to a field of a message the plugin will know to add signing and verification methods to the generated type:
@@ -44,12 +44,12 @@ Then to sign a message before it is marhsalled a developer writes:
 
 ```go
 msg.Sign()
-proto.Marshall(msg)
+proto.Marshal(msg)
 ```
-To verify a message after it is unmarshalled the following is required:
+To verify a message after it is unmarshaled the following is required:
 
 ```go
-proto.Unmarshall(bytes, &msg)
+proto.Unmarshal(bytes, &msg)
 if ok, err := msg.Verify(); !ok || err != nil {
 	// Signature does not match
 }
@@ -57,15 +57,13 @@ if ok, err := msg.Verify(); !ok || err != nil {
 ### Message Integrity Linter
 
 Additionally a custom linter to ensure correct use of the message integrity plugin was created.
-It detects if any proto types which have the option enabled are not signed or verified before marshalling or after unmarhsalling respectively.
+It checks that messages are signed before they are marshaled and that they are verified before they are unmarshaled. It only checks messages which have the custom option enabled.
 
 #### Building
-``` make
-build-integritylint:
-	@go build -o bin/integritylint cmd/integritylint/main.go
+``` bash
+go build -o bin/integritylint cmd/integritylint/main.go
 ```
 #### Running
-``` make
-integritylint: build-integritylint
-	./bin/integritylint go_file.go
+``` bash
+./bin/integritylint go_file.go
 ```
