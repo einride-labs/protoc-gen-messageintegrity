@@ -46,7 +46,7 @@ Then to sign a message before it is marhsalled a developer writes:
 msg.Sign()
 proto.Marshall(msg)
 ```
-To Verify a message after it is unmarshalled the following is required:
+To verify a message after it is unmarshalled the following is required:
 
 ```go
 proto.Unmarshall(bytes, &msg)
@@ -65,5 +65,7 @@ build-integritylint:
 	@go build -o bin/integritylint cmd/integritylint/main.go
 ```
 #### Running
+``` make
 integritylint: build-integritylint
 	./bin/integritylint go_file.go
+```
