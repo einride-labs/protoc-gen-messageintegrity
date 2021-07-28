@@ -1,7 +1,7 @@
-package verificationoptionTest
+package verificationtest
 
 import (
-	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verification"
+	verification "github.com/einride/protoc-gen-messageintegrity/internal/verification"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
@@ -11,8 +11,8 @@ import (
 func TestSigning(t *testing.T) {
 	tests := []struct {
 		key                   []byte
-		message               verificationoption.VerifiableMessage
-		expectedSignedMessage verificationoption.VerifiableMessage
+		message               verification.VerifiableMessage
+		expectedSignedMessage verification.VerifiableMessage
 		isValid               bool
 		expectedError         string
 	}{
@@ -26,7 +26,7 @@ func TestSigning(t *testing.T) {
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		err := verificationoption.SignProto(test.message, test.key)
+		err := verification.SignProto(test.message, test.key)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
@@ -45,7 +45,7 @@ func TestSigning(t *testing.T) {
 func TestSignatureVerification(t *testing.T) {
 	tests := []struct {
 		key           []byte
-		message       verificationoption.VerifiableMessage
+		message       verification.VerifiableMessage
 		expectedValue bool
 		expectedError string
 	}{
@@ -59,11 +59,11 @@ func TestSignatureVerification(t *testing.T) {
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationoption.SignProto(test.message, test.key)
+		_ = verification.SignProto(test.message, test.key)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
-		isValid, err := verificationoption.ValidateHMAC(test.message, test.key)
+		isValid, err := verification.ValidateHMAC(test.message, test.key)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
@@ -79,8 +79,8 @@ func TestSignatureVerification(t *testing.T) {
 func TestSignatureVerificationModification(t *testing.T) {
 	tests := []struct {
 		key             []byte
-		message         verificationoption.VerifiableMessage
-		receivedMessage verificationoption.VerifiableMessage
+		message         verification.VerifiableMessage
+		receivedMessage verification.VerifiableMessage
 		expectedValue   bool
 		expectedError   string
 	}{
@@ -93,11 +93,11 @@ func TestSignatureVerificationModification(t *testing.T) {
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationoption.SignProto(test.message, test.key)
+		_ = verification.SignProto(test.message, test.key)
 		if test.receivedMessage != nil {
 			log.Printf("Signature of Received Message: %v", test.receivedMessage.GetSignature())
 		}
-		isValid, err := verificationoption.ValidateHMAC(test.receivedMessage, test.key)
+		isValid, err := verification.ValidateHMAC(test.receivedMessage, test.key)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}

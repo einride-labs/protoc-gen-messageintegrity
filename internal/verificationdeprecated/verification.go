@@ -1,4 +1,4 @@
-package verificationdepricated
+package verificationdeprecated
 
 import (
 	"bytes"

@@ -2,7 +2,7 @@ package keypairtestutils
 
 import (
 	"fmt"
-	"github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
+	verificationsymmetric "github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	"io"
 	"os"
 	"path"
@@ -10,13 +10,13 @@ import (
 )
 
 // Moves the RSA keypair for the corresponding keyID from the test-keys dir to the directory used by message-integrity
-func SetupRsaKeyPair(keyID verificationrsaoption.KeyID) error {
+func SetupRsaKeyPair(keyID verificationsymmetric.KeyID) error {
 	keyName := fmt.Sprintf("message_integrity_%v", keyID)
 	return setupKeyPair(keyName)
 }
 
 // Moves the ECDSA keypair for the corresponding keyID from the test-keys dir to the directory used by message-integrity
-func SetupEcdsaKeyPair(keyID verificationrsaoption.KeyID) error {
+func SetupEcdsaKeyPair(keyID verificationsymmetric.KeyID) error {
 	keyName := fmt.Sprintf("message_integrity_%v_ecdsa", keyID)
 	return setupKeyPair(keyName)
 }
@@ -41,7 +41,7 @@ func setupKeyPair(keyName string) error {
 	if strings.HasSuffix(pwd, "thesis-implicit-message-integrity") {
 		srcTestKeysDir = path.Join(".", "internal/verificationRsaOptionTest/test-keys")
 	}
-	dstTestKeysDir := path.Join(home, verificationrsaoption.DefaultKeysDir)
+	dstTestKeysDir := path.Join(home, verificationsymmetric.DefaultKeysDir)
 	_ = os.Mkdir(dstTestKeysDir, os.ModeDir)
 	publicKeyName := fmt.Sprintf("%v_public.pem", keyName)
 	privateKeyName := fmt.Sprintf("%v_private.pem", keyName)

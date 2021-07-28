@@ -1,4 +1,4 @@
-package verificationrsaoptionTest
+package verificationsymmetrictest
 
 import (
 	"crypto/rand"
@@ -7,8 +7,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"github.com/einride/protoc-gen-messageintegrity/internal/keypairtestutils"
-	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verification"
-	verificationrsaoption "github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
@@ -19,7 +18,7 @@ import (
 
 func TestCreatePKCS1(t *testing.T) {
 	tests := []struct {
-		keyID         verificationrsaoption.KeyID
+		keyID         verificationsymmetric.KeyID
 		length        int
 		expectedError string
 	}{
@@ -35,14 +34,14 @@ func TestCreatePKCS1(t *testing.T) {
 			t.Errorf("error actual error: %v, expectedError: %v", err, test.expectedError)
 		}
 
-		privKey, err := verificationrsaoption.FetchPrivateKey(test.keyID)
+		privKey, err := verificationsymmetric.FetchPrivateKey(test.keyID)
 		if err != nil {
 			t.Errorf("failed to fetch private key: %v", err)
 		}
 		log.Printf("Case KeyID: %v\n", test.keyID)
 		log.Printf("Private key: %v\n", privKey)
 
-		pubKey, err := verificationrsaoption.FetchPublicKey(test.keyID)
+		pubKey, err := verificationsymmetric.FetchPublicKey(test.keyID)
 		if err != nil {
 			t.Errorf("failed to fetch public key: %v", err)
 		}
@@ -52,7 +51,7 @@ func TestCreatePKCS1(t *testing.T) {
 
 func TestParsePKCS1(t *testing.T) {
 	tests := []struct {
-		keyID         verificationrsaoption.KeyID
+		keyID         verificationsymmetric.KeyID
 		length        int
 		expectedError string
 	}{
@@ -70,12 +69,12 @@ func TestParsePKCS1(t *testing.T) {
 
 }
 
-func createRSAKeyPair(keyID verificationrsaoption.KeyID, length int) error {
+func createRSAKeyPair(keyID verificationsymmetric.KeyID, length int) error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return err
 	}
-	keysPath := path.Join(home, verificationrsaoption.DefaultKeysDir)
+	keysPath := path.Join(home, verificationsymmetric.DefaultKeysDir)
 	// Generate the RSA Key.
 	privateKey, err := rsa.GenerateKey(rand.Reader, length)
 	if err != nil {
@@ -125,9 +124,9 @@ func createRSAKeyPair(keyID verificationrsaoption.KeyID, length int) error {
 
 func TestSigningRSA(t *testing.T) {
 	tests := []struct {
-		keyID                 verificationrsaoption.KeyID
-		message               verificationoption.VerifiableMessage
-		expectedSignedMessage verificationoption.VerifiableMessage
+		keyID                 verificationsymmetric.KeyID
+		message               verificationsymmetric.VerifiableMessage
+		expectedSignedMessage verificationsymmetric.VerifiableMessage
 		isValid               bool
 		expectedError         string
 	}{
@@ -254,7 +253,7 @@ func TestSigningRSA(t *testing.T) {
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
-		err := verificationrsaoption.SignPKCS1v15(test.message, test.keyID)
+		err := verificationsymmetric.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
@@ -272,8 +271,8 @@ func TestSigningRSA(t *testing.T) {
 
 func TestSignatureVerificationRSA(t *testing.T) {
 	tests := []struct {
-		keyID         verificationrsaoption.KeyID
-		message       verificationoption.VerifiableMessage
+		keyID         verificationsymmetric.KeyID
+		message       verificationsymmetric.VerifiableMessage
 		expectedValue bool
 		expectedError string
 	}{
@@ -319,11 +318,11 @@ func TestSignatureVerificationRSA(t *testing.T) {
 		log.Printf("Case: %v", test.message)
 		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationrsaoption.SignPKCS1v15(test.message, test.keyID)
+		_ = verificationsymmetric.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
-		isValid, err := verificationrsaoption.ValidatePKCS1v15(test.message, test.keyID)
+		isValid, err := verificationsymmetric.ValidatePKCS1v15(test.message, test.keyID)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
@@ -338,9 +337,9 @@ func TestSignatureVerificationRSA(t *testing.T) {
 
 func TestSignatureVerificationModificationRSA(t *testing.T) {
 	tests := []struct {
-		keyID           verificationrsaoption.KeyID
-		message         verificationoption.VerifiableMessage
-		receivedMessage verificationoption.VerifiableMessage
+		keyID           verificationsymmetric.KeyID
+		message         verificationsymmetric.VerifiableMessage
+		receivedMessage verificationsymmetric.VerifiableMessage
 		expectedValue   bool
 		expectedError   string
 	}{
@@ -441,11 +440,11 @@ func TestSignatureVerificationModificationRSA(t *testing.T) {
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationrsaoption.SignPKCS1v15(test.message, test.keyID)
+		_ = verificationsymmetric.SignPKCS1v15(test.message, test.keyID)
 		if test.receivedMessage != nil {
 			log.Printf("Signature of Received Message: %v", test.receivedMessage.GetSignature())
 		}
-		isValid, err := verificationrsaoption.ValidatePKCS1v15(test.receivedMessage, test.keyID)
+		isValid, err := verificationsymmetric.ValidatePKCS1v15(test.receivedMessage, test.keyID)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
@@ -461,8 +460,8 @@ func TestSignatureVerificationModificationRSA(t *testing.T) {
 func TestSigning(t *testing.T) {
 	tests := []struct {
 		key                   []byte
-		message               verificationoption.VerifiableMessage
-		expectedSignedMessage verificationoption.VerifiableMessage
+		message               verificationsymmetric.VerifiableMessage
+		expectedSignedMessage verificationsymmetric.VerifiableMessage
 		isValid               bool
 		expectedError         string
 	}{
@@ -476,7 +475,7 @@ func TestSigning(t *testing.T) {
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		err := verificationoption.SignProto(test.message, test.key)
+		err := verificationsymmetric.SignProto(test.message, test.key)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
@@ -495,7 +494,7 @@ func TestSigning(t *testing.T) {
 func TestSignatureVerification(t *testing.T) {
 	tests := []struct {
 		key           []byte
-		message       verificationoption.VerifiableMessage
+		message       verificationsymmetric.VerifiableMessage
 		expectedValue bool
 		expectedError string
 	}{
@@ -509,11 +508,11 @@ func TestSignatureVerification(t *testing.T) {
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationoption.SignProto(test.message, test.key)
+		_ = verificationsymmetric.SignProto(test.message, test.key)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
-		isValid, err := verificationoption.ValidateHMAC(test.message, test.key)
+		isValid, err := verificationsymmetric.ValidateHMAC(test.message, test.key)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
@@ -529,8 +528,8 @@ func TestSignatureVerification(t *testing.T) {
 func TestSignatureVerificationModification(t *testing.T) {
 	tests := []struct {
 		key             []byte
-		message         verificationoption.VerifiableMessage
-		receivedMessage verificationoption.VerifiableMessage
+		message         verificationsymmetric.VerifiableMessage
+		receivedMessage verificationsymmetric.VerifiableMessage
 		expectedValue   bool
 		expectedError   string
 	}{
@@ -543,11 +542,11 @@ func TestSignatureVerificationModification(t *testing.T) {
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationoption.SignProto(test.message, test.key)
+		_ = verificationsymmetric.SignProto(test.message, test.key)
 		if test.receivedMessage != nil {
 			log.Printf("Signature of Received Message: %v", test.receivedMessage.GetSignature())
 		}
-		isValid, err := verificationoption.ValidateHMAC(test.receivedMessage, test.key)
+		isValid, err := verificationsymmetric.ValidateHMAC(test.receivedMessage, test.key)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
