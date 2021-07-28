@@ -1,8 +1,8 @@
 package messageintegrity
 
 import (
-	"github.com/einride/protoc-gen-messageintegrity/internal/keypairTestUtils"
-	verificationRSAOption "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
+	"github.com/einride/protoc-gen-messageintegrity/internal/keypairtestutils"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
@@ -20,7 +20,7 @@ const (
 func TestSign(t *testing.T) {
 	tests := []struct {
 		key                   string
-		keyID                 verificationRSAOption.KeyID
+		keyID                 verificationsymmetric.KeyID
 		message               *v1.SteeringCommandVerificationOption
 		receivedSignedMessage *v1.SteeringCommandVerificationOption
 		isValid               bool
@@ -66,7 +66,7 @@ func TestSign(t *testing.T) {
 	for _, test := range tests {
 		os.Setenv(ImplicitMessageIntegrityKey, test.key)
 		os.Setenv(ImplicitMessageIntegrityKeyID, string(test.keyID))
-		_ = keypairTestUtils.SetupKeyPair(test.keyID)
+		_ = keypairtestutils.SetupKeyPair(test.keyID)
 		err := test.message.Sign()
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
@@ -97,7 +97,7 @@ func TestSign(t *testing.T) {
 func TestSignVerify(t *testing.T) {
 	tests := []struct {
 		key                   string
-		keyID                 verificationRSAOption.KeyID
+		keyID                 verificationsymmetric.KeyID
 		message               *v1.SteeringCommandVerificationOption
 		expectedSignedMessage *v1.SteeringCommandVerificationOption
 		isValid               bool
@@ -145,7 +145,7 @@ func TestSignVerify(t *testing.T) {
 	for _, test := range tests {
 		os.Setenv(ImplicitMessageIntegrityKey, test.key)
 		os.Setenv(ImplicitMessageIntegrityKeyID, string(test.keyID))
-		_ = keypairTestUtils.SetupKeyPair(test.keyID)
+		_ = keypairtestutils.SetupKeyPair(test.keyID)
 		err := test.message.Sign()
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
