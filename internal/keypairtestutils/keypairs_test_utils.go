@@ -1,16 +1,16 @@
-package keypairTestUtils
+package keypairtestutils
 
 import (
 	"fmt"
-	"github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	"io"
 	"os"
 	"path"
 	"strings"
 )
 
-// Moves the keypair for the kedID from the test-keys dir to the directory used by message-integrity
-func SetupKeyPair(keyID verificationrsaoption.KeyID) error {
+// Moves the keypair for the corresponding keyID from the test-keys dir to the directory used by message-integrity
+func SetupKeyPair(keyID verificationsymmetric.KeyID) error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		// Assuming the tests are being run from the root of the repo.
@@ -21,16 +21,16 @@ func SetupKeyPair(keyID verificationrsaoption.KeyID) error {
 	if err != nil {
 		return err
 	}
-	// Cases where we aren't running verificationRSAOptionTest.
+	// Cases where we aren't running verificationsymmetrictest.
 	// We're running from the plugin folder.
 	if strings.HasSuffix(pwd,"internal/messageintegrity") {
-		srcTestKeysDir = "../verificationRsaOptionTest/test-keys"
+		srcTestKeysDir = "../verificationsymmetrictest/test-keys"
 	}
 	// We're running from the repo root.
 	if strings.HasSuffix(pwd, "thesis-implicit-message-integrity") {
-		srcTestKeysDir = path.Join(".", "internal/verificationRsaOptionTest/test-keys")
+		srcTestKeysDir = path.Join(".", "internal/verificationsymmetrictest/test-keys")
 	}
-	dstTestKeysDir := path.Join(home, verificationrsaoption.DefaultKeysDir)
+	dstTestKeysDir := path.Join(home, verificationsymmetric.DefaultKeysDir)
 	_ = os.Mkdir(dstTestKeysDir, os.ModeDir)
 	keyName := fmt.Sprintf("message_integrity_%v", keyID)
 	publicKeyName := fmt.Sprintf("%v_public.pem", keyName)

@@ -1,4 +1,4 @@
-package verificationTest
+package verificationtest
 
 import (
 	"github.com/einride/protoc-gen-messageintegrity/internal/verification"

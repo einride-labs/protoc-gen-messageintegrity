@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	plugin := messageintegrity.Plugin{Version: messageintegrity.VerificationRSAOption}
+	plugin := messageintegrity.Plugin{Version: messageintegrity.VerificationSymmetric}
 	if err := plugin.Generate(); err != nil {
 		log.Fatal(err)
 	}
