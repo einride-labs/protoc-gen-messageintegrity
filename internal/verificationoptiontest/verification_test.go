@@ -1,10 +1,9 @@
-package verificationdeprecatedtest
+package verificationoptiontest
 
 import (
-	"github.com/einride/protoc-gen-messageintegrity/internal/verificationdeprecated"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationoption"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
-	"gotest.tools/v3/assert"
 	"log"
 	"testing"
 )
@@ -12,8 +11,8 @@ import (
 func TestSigning(t *testing.T) {
 	tests := []struct {
 		key                   []byte
-		message               verificationdeprecated.VerifiableMessage
-		expectedSignedMessage verificationdeprecated.VerifiableMessage
+		message               verificationoption.VerifiableMessage
+		expectedSignedMessage verificationoption.VerifiableMessage
 		isValid               bool
 		expectedError         string
 	}{
@@ -23,10 +22,11 @@ func TestSigning(t *testing.T) {
 		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0}, expectedSignedMessage: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0, Signature: []byte{5, 151, 155, 117, 81, 80, 154, 220, 0, 88, 88, 194, 100, 6, 74, 66, 99, 251, 28, 141, 118, 114, 87, 140, 120, 207, 59, 210, 133, 179, 150, 107}}, isValid: true, expectedError: ""},
 		{key: nil, message: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0}, expectedSignedMessage: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0, Signature: []byte{5, 151, 155, 117, 81, 80, 154, 220, 0, 88, 88, 194, 100, 6, 74, 66, 99, 251, 28, 141, 118, 114, 87, 140, 120, 207, 59, 210, 133, 179, 150, 107}}, isValid: false, expectedError: "key was nil"},
 		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: nil, expectedSignedMessage: nil, isValid: true, expectedError: "message was nil"},
+		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerification{SteeringAngle: 6.0}, expectedSignedMessage: &v1.SteeringCommandVerification{SteeringAngle: 6.0, Signature: []byte{5, 151, 155, 117, 81, 80, 154, 220, 0, 88, 88, 194, 100, 6, 74, 66, 99, 251, 28, 141, 118, 114, 87, 140, 120, 207, 59, 210, 133, 179, 150, 107}}, isValid: false, expectedError: "failed to find any message integrity signature field in proto"},
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		err := verificationdeprecated.SignProto(test.message, test.key)
+		err := verificationoption.SignProto(test.message, test.key)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
@@ -45,7 +45,7 @@ func TestSigning(t *testing.T) {
 func TestSignatureVerification(t *testing.T) {
 	tests := []struct {
 		key           []byte
-		message       verificationdeprecated.VerifiableMessage
+		message       verificationoption.VerifiableMessage
 		expectedValue bool
 		expectedError string
 	}{
@@ -54,46 +54,50 @@ func TestSignatureVerification(t *testing.T) {
 		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerificationOption{}, expectedValue: true, expectedError: ""},
 		{key: nil, message: &v1.SteeringCommandVerificationOption{}, expectedValue: false, expectedError: "key was nil"},
 		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: nil, expectedValue: false, expectedError: "message was nil"},
+		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerification{SteeringAngle: 6.0}, expectedValue: false, expectedError: "failed to find any message integrity signature field in proto"},
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationdeprecated.SignProto(test.message, test.key)
+		_ = verificationoption.SignProto(test.message, test.key)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
-		isValid, err := verificationdeprecated.ValidateHMAC(test.message, test.key)
+		isValid, err := verificationoption.ValidateHMAC(test.message, test.key)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
 		if err == nil && test.expectedError != "" {
 			t.Errorf("Error actual = nil, and expected = %v", test.expectedError)
 		}
-		assert.Assert(t, isValid == test.expectedValue)
+		if isValid != test.expectedValue {
+			t.Errorf("isValid actual = %v , and expected = %v", isValid, test.expectedValue)
+		}
 	}
 }
 
 func TestSignatureVerificationModification(t *testing.T) {
 	tests := []struct {
 		key             []byte
-		message         verificationdeprecated.VerifiableMessage
-		receivedMessage verificationdeprecated.VerifiableMessage
+		message         verificationoption.VerifiableMessage
+		receivedMessage verificationoption.VerifiableMessage
 		expectedValue   bool
 		expectedError   string
 	}{
 		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerificationOption{SteeringAngle: 5.0}, receivedMessage: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0, Signature: []byte{122, 226, 141, 14, 125, 93, 5, 148, 213, 252, 225, 147, 142, 195, 174, 247, 49, 164, 86, 20, 9, 189, 217, 122, 180, 228, 79, 20, 152, 191, 55, 12}}, expectedValue: false, expectedError: ""},
-		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0}, receivedMessage: &v1.SteeringCommandVerificationOption{}, expectedValue: false, expectedError: ""},
+		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0}, receivedMessage: &v1.SteeringCommandVerificationOption{}, expectedValue: false, expectedError: "signature behaviour required but signature not set"},
 		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerificationOption{}, receivedMessage: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0, Signature: []byte{122, 226, 141, 14, 125, 93, 5, 148, 213, 252, 225, 147, 142, 195, 174, 247, 49, 164, 86, 20, 9, 189, 217, 122, 180, 228, 79, 20, 152, 191, 55, 12}}, expectedValue: false, expectedError: ""},
 		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0}, receivedMessage: &v1.SteeringCommandVerificationOption{SteeringAngle: 6.0, Signature: []byte{5, 151, 155, 117, 81, 80, 154, 220, 0, 88, 88, 194, 100, 6, 74, 66, 99, 251, 28, 141, 118, 114, 87, 140, 120, 207, 59, 210, 133, 179, 150, 107}}, expectedValue: true, expectedError: ""},
+		{key: []byte{253, 131, 172, 77, 207, 188, 17, 98, 0, 235, 48, 62, 175, 191, 75, 36, 181, 119, 22, 36, 95, 180, 254, 180, 180, 14, 39, 255, 104, 211, 146, 113}, message: &v1.SteeringCommandVerification{SteeringAngle: 6.0}, receivedMessage: &v1.SteeringCommandVerification{SteeringAngle: 6.0, Signature: []byte{5, 151, 155, 117, 81, 80, 154, 220, 0, 88, 88, 194, 100, 6, 74, 66, 99, 251, 28, 141, 118, 114, 87, 140, 120, 207, 59, 210, 133, 179, 150, 107}}, expectedValue: false, expectedError: "failed to find any message integrity signature field in proto"},
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationdeprecated.SignProto(test.message, test.key)
-		if test.message != nil {
-			log.Printf("Signature: %v", test.message.GetSignature())
+		_ = verificationoption.SignProto(test.message, test.key)
+		if test.receivedMessage != nil {
+			log.Printf("Signature of Received Message: %v", test.receivedMessage.GetSignature())
 		}
-		isValid, err := verificationdeprecated.ValidateHMAC(test.receivedMessage, test.key)
+		isValid, err := verificationoption.ValidateHMAC(test.receivedMessage, test.key)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}

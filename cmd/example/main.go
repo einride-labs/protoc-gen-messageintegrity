@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/einride/protoc-gen-messageintegrity/internal/keypairtestutils"
-	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
@@ -41,7 +41,7 @@ func main() {
 	// RSA Example
 
 
-	keyID := verificationoptionrsa.KeyID("test_verification_id_1")
+	keyID := verificationsymmetric.KeyID("test_verification_id_1")
 
 	fmt.Printf("Key id : %v\n", keyID)
 	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))

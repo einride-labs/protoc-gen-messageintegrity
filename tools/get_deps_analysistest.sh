@@ -2,12 +2,13 @@
 
 mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/proto/gen
 mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verification
-mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationOption
-mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption
+mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationoption
+mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric
 cp -r proto/gen/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/proto/gen
+cp -r internal/verificationdeprecated/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationdeprecated
 cp -r internal/verification/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verification
-cp -r internal/verificationOption/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationOption
-cp -r internal/verificationRsaOption/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption
+cp -r internal/verificationoption/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationoption
+cp -r internal/verificationsymmetric/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric
 
 if [[ ! -d internal/integritycheck/testdata/src/github.com/golang/protobuf ]]
 then

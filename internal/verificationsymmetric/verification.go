@@ -1,4 +1,4 @@
-package verificationrsaoption
+package verificationsymmetric
 
 import (
 	"bytes"

@@ -2,7 +2,7 @@ package keypairtestutils
 
 import (
 	"fmt"
-	verificationsymmetric "github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	"io"
 	"os"
 	"path"
@@ -32,14 +32,14 @@ func setupKeyPair(keyName string) error {
 	if err != nil {
 		return err
 	}
-	// Cases where we aren't running verificationRSAOptionTest.
+	// Cases where we aren't running verificationsymmetrictest.
 	// We're running from the plugin folder.
 	if strings.HasSuffix(pwd,"internal/messageintegrity") {
-		srcTestKeysDir = "../verificationRsaOptionTest/test-keys"
+		srcTestKeysDir = "../verificationsymmetrictest/test-keys"
 	}
 	// We're running from the repo root.
 	if strings.HasSuffix(pwd, "thesis-implicit-message-integrity") {
-		srcTestKeysDir = path.Join(".", "internal/verificationRsaOptionTest/test-keys")
+		srcTestKeysDir = path.Join(".", "internal/verificationsymmetrictest/test-keys")
 	}
 	dstTestKeysDir := path.Join(home, verificationsymmetric.DefaultKeysDir)
 	_ = os.Mkdir(dstTestKeysDir, os.ModeDir)

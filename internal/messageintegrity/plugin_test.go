@@ -2,7 +2,7 @@ package messageintegrity
 
 import (
 	"github.com/einride/protoc-gen-messageintegrity/internal/keypairtestutils"
-	verificationsymmetric "github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
