@@ -20,7 +20,7 @@ func BenchmarkSign(b *testing.B) {
 	os.Setenv(integpb.ImplicitMessageIntegrityKey, key)
 	keyID := verificationsymmetric.KeyID("test_verification_id_1")
 	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))
-	_ = keypairtestutils.SetupKeyPair(keyID)
+	_ = keypairtestutils.SetupRsaKeyPair(keyID)
 
 	var err error
 	for i := 0; i < b.N; i++ {
@@ -40,7 +40,7 @@ func BenchmarkVerify(b *testing.B) {
 	os.Setenv(integpb.ImplicitMessageIntegrityKey, key)
 	keyID := verificationsymmetric.KeyID("test_verification_id_1")
 	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))
-	_ = keypairtestutils.SetupKeyPair(keyID)
+	_ = keypairtestutils.SetupRsaKeyPair(keyID)
 	sigSteeringCommand := integpb.SteeringCommandVerificationOption{SteeringAngle: 5.0}
 	if err := sigSteeringCommand.Sign(); err != nil {
 		log.Fatalf("failed to sign proto: %v", err)
@@ -61,7 +61,7 @@ func BenchmarkVerifyE2E(b *testing.B) {
 	os.Setenv(integpb.ImplicitMessageIntegrityKey, key)
 	keyID := verificationsymmetric.KeyID("test_verification_id_1")
 	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))
-	_ =  keypairtestutils.SetupKeyPair(keyID)
+	_ =  keypairtestutils.SetupRsaKeyPair(keyID)
 	var isValid bool
 	for i := 0; i < b.N; i++ {
 		sigSteeringCommand := integpb.SteeringCommandVerificationOption{SteeringAngle: 5.0}

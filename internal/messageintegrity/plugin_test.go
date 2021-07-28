@@ -66,7 +66,7 @@ func TestSign(t *testing.T) {
 	for _, test := range tests {
 		os.Setenv(ImplicitMessageIntegrityKey, test.key)
 		os.Setenv(ImplicitMessageIntegrityKeyID, string(test.keyID))
-		_ = keypairtestutils.SetupKeyPair(test.keyID)
+		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
 		err := test.message.Sign()
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
@@ -145,7 +145,7 @@ func TestSignVerify(t *testing.T) {
 	for _, test := range tests {
 		os.Setenv(ImplicitMessageIntegrityKey, test.key)
 		os.Setenv(ImplicitMessageIntegrityKeyID, string(test.keyID))
-		_ = keypairtestutils.SetupKeyPair(test.keyID)
+		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
 		err := test.message.Sign()
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())

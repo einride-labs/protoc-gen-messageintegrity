@@ -252,7 +252,7 @@ func TestSigningRSA(t *testing.T) {
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		_ = keypairtestutils.SetupKeyPair(test.keyID)
+		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
 		err := verificationsymmetric.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
@@ -316,7 +316,7 @@ func TestSignatureVerificationRSA(t *testing.T) {
 
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		_ = keypairtestutils.SetupKeyPair(test.keyID)
+		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
 		// Don't check error as we want to test robustness of ValidateHMAC.
 		_ = verificationsymmetric.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
