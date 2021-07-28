@@ -5,6 +5,7 @@ mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-mess
 mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationoption
 mkdir -p internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric
 cp -r proto/gen/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/proto/gen
+cp -r internal/verificationdeprecated/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationdeprecated
 cp -r internal/verification/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verification
 cp -r internal/verificationoption/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationoption
 cp -r internal/verificationsymmetric/* internal/integritycheck/testdata/src/github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric
