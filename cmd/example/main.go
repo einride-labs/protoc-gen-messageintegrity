@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/einride/protoc-gen-messageintegrity/internal/keypairTestUtils"
-	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
+	"github.com/einride/protoc-gen-messageintegrity/internal/keypairtestutils"
+	"github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	integpb "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
@@ -41,11 +41,11 @@ func main() {
 	// RSA Example
 
 
-	keyID := verificationoptionrsa.KeyID("test_verification_id_1")
+	keyID := verificationsymmetric.KeyID("test_verification_id_1")
 
 	fmt.Printf("Key id : %v\n", keyID)
 	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))
-	if err := keypairTestUtils.SetupKeyPair(keyID); err != nil {
+	if err := keypairtestutils.SetupRsaKeyPair(keyID); err != nil {
 		log.Fatalf("failed to setup keypair for example: %v\n", err)
 	}
 	steeringCmd := integpb.SteeringCommandVerificationOption{SteeringAngle: 5.0}

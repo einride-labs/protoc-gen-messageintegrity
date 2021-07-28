@@ -15,9 +15,9 @@ import (
 
 type PackageVersion int
 const (
-	Verification PackageVersion = iota
-	VerificationOption
-	VerificationRSAOption
+	VerificationDeprecated PackageVersion = iota
+	Verification
+	VerificationSymmetric
 )
 
 type Plugin struct {
@@ -86,12 +86,12 @@ func (x *%s) Verify() (bool, error) {
 
 `
 		switch g.Version {
+		case VerificationDeprecated:
+			packageName = "verificationdeprecated"
 		case Verification:
 			packageName = "verification"
-		case VerificationOption:
-			packageName = "verificationOption"
-		case VerificationRSAOption:
-			packageName = "verificationRsaOption"
+		case VerificationSymmetric:
+			packageName = "verificationsymmetric"
 			buf.Write([]byte(`
 const ImplicitMessageIntegrityKeyID = "IMPLICIT_MESSAGE_INTEGRITY_KEY_ID"`))
 			interfaceFormatString = `
@@ -99,12 +99,12 @@ const ImplicitMessageIntegrityKeyID = "IMPLICIT_MESSAGE_INTEGRITY_KEY_ID"`))
 
 func (x *%s) Sign() error {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
-	return %v.SignPKCS1v15(x, verificationRsaOption.KeyID(keyID)) 
+	return %v.SignPKCS1v15(x, verificationsymmetric.KeyID(keyID)) 
 }
 
 func (x *%s) Verify() (bool, error) {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
-	return %v.ValidatePKCS1v15(x, verificationRsaOption.KeyID(keyID))
+	return %v.ValidatePKCS1v15(x, verificationsymmetric.KeyID(keyID))
 }
 
 `
