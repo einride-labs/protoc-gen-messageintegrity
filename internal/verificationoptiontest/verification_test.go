@@ -1,7 +1,7 @@
-package verificationoptionTest
+package verificationoptiontest
 
 import (
-	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verificationOption"
+	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verificationoption"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"

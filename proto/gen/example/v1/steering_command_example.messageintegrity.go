@@ -7,7 +7,7 @@
 package v1
 
 import (
-	verificationRsaOption "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
+	verificationsymmetric "github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	os "os"
 )
 
@@ -16,20 +16,20 @@ const ImplicitMessageIntegrityKeyID = "IMPLICIT_MESSAGE_INTEGRITY_KEY_ID"
 
 func (x *SteeringCommandVerification) Sign() error {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
-	return verificationRsaOption.SignPKCS1v15(x, verificationRsaOption.KeyID(keyID))
+	return verificationsymmetric.SignPKCS1v15(x, verificationsymmetric.KeyID(keyID))
 }
 
 func (x *SteeringCommandVerification) Verify() (bool, error) {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
-	return verificationRsaOption.ValidatePKCS1v15(x, verificationRsaOption.KeyID(keyID))
+	return verificationsymmetric.ValidatePKCS1v15(x, verificationsymmetric.KeyID(keyID))
 }
 
 func (x *SteeringCommandVerificationOption) Sign() error {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
-	return verificationRsaOption.SignPKCS1v15(x, verificationRsaOption.KeyID(keyID))
+	return verificationsymmetric.SignPKCS1v15(x, verificationsymmetric.KeyID(keyID))
 }
 
 func (x *SteeringCommandVerificationOption) Verify() (bool, error) {
 	keyID := os.Getenv(ImplicitMessageIntegrityKeyID)
-	return verificationRsaOption.ValidatePKCS1v15(x, verificationRsaOption.KeyID(keyID))
+	return verificationsymmetric.ValidatePKCS1v15(x, verificationsymmetric.KeyID(keyID))
 }
