@@ -1,4 +1,4 @@
-package verificationoptionirsaTest
+package verificationrsaoptionTest
 
 import (
 	"crypto/rand"
@@ -6,9 +6,9 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"github.com/einride/protoc-gen-messageintegrity/internal/keypairTestUtils"
-	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verificationOption"
-	verificationoptionrsa "github.com/einride/protoc-gen-messageintegrity/internal/verificationRsaOption"
+	"github.com/einride/protoc-gen-messageintegrity/internal/keypairtestutils"
+	verificationoption "github.com/einride/protoc-gen-messageintegrity/internal/verification"
+	verificationrsaoption "github.com/einride/protoc-gen-messageintegrity/internal/verificationsymmetric"
 	v1 "github.com/einride/protoc-gen-messageintegrity/proto/gen/example/v1"
 	"google.golang.org/protobuf/proto"
 	"log"
@@ -19,7 +19,7 @@ import (
 
 func TestCreatePKCS1(t *testing.T) {
 	tests := []struct {
-		keyID         verificationoptionrsa.KeyID
+		keyID         verificationrsaoption.KeyID
 		length        int
 		expectedError string
 	}{
@@ -35,14 +35,14 @@ func TestCreatePKCS1(t *testing.T) {
 			t.Errorf("error actual error: %v, expectedError: %v", err, test.expectedError)
 		}
 
-		privKey, err := verificationoptionrsa.FetchPrivateKey(test.keyID)
+		privKey, err := verificationrsaoption.FetchPrivateKey(test.keyID)
 		if err != nil {
 			t.Errorf("failed to fetch private key: %v", err)
 		}
 		log.Printf("Case KeyID: %v\n", test.keyID)
 		log.Printf("Private key: %v\n", privKey)
 
-		pubKey, err := verificationoptionrsa.FetchPublicKey(test.keyID)
+		pubKey, err := verificationrsaoption.FetchPublicKey(test.keyID)
 		if err != nil {
 			t.Errorf("failed to fetch public key: %v", err)
 		}
@@ -52,7 +52,7 @@ func TestCreatePKCS1(t *testing.T) {
 
 func TestParsePKCS1(t *testing.T) {
 	tests := []struct {
-		keyID         verificationoptionrsa.KeyID
+		keyID         verificationrsaoption.KeyID
 		length        int
 		expectedError string
 	}{
@@ -70,12 +70,12 @@ func TestParsePKCS1(t *testing.T) {
 
 }
 
-func createRSAKeyPair(keyID verificationoptionrsa.KeyID, length int) error {
+func createRSAKeyPair(keyID verificationrsaoption.KeyID, length int) error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return err
 	}
-	keysPath := path.Join(home, verificationoptionrsa.DefaultKeysDir)
+	keysPath := path.Join(home, verificationrsaoption.DefaultKeysDir)
 	// Generate the RSA Key.
 	privateKey, err := rsa.GenerateKey(rand.Reader, length)
 	if err != nil {
@@ -125,7 +125,7 @@ func createRSAKeyPair(keyID verificationoptionrsa.KeyID, length int) error {
 
 func TestSigningRSA(t *testing.T) {
 	tests := []struct {
-		keyID                 verificationoptionrsa.KeyID
+		keyID                 verificationrsaoption.KeyID
 		message               verificationoption.VerifiableMessage
 		expectedSignedMessage verificationoption.VerifiableMessage
 		isValid               bool
@@ -253,8 +253,8 @@ func TestSigningRSA(t *testing.T) {
 	}
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		_ = keypairTestUtils.SetupKeyPair(test.keyID)
-		err := verificationoptionrsa.SignPKCS1v15(test.message, test.keyID)
+		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
+		err := verificationrsaoption.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
@@ -272,7 +272,7 @@ func TestSigningRSA(t *testing.T) {
 
 func TestSignatureVerificationRSA(t *testing.T) {
 	tests := []struct {
-		keyID         verificationoptionrsa.KeyID
+		keyID         verificationrsaoption.KeyID
 		message       verificationoption.VerifiableMessage
 		expectedValue bool
 		expectedError string
@@ -317,13 +317,13 @@ func TestSignatureVerificationRSA(t *testing.T) {
 
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
-		_ = keypairTestUtils.SetupKeyPair(test.keyID)
+		_ = keypairtestutils.SetupRsaKeyPair(test.keyID)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationoptionrsa.SignPKCS1v15(test.message, test.keyID)
+		_ = verificationrsaoption.SignPKCS1v15(test.message, test.keyID)
 		if test.message != nil {
 			log.Printf("Signature: %v", test.message.GetSignature())
 		}
-		isValid, err := verificationoptionrsa.ValidatePKCS1v15(test.message, test.keyID)
+		isValid, err := verificationrsaoption.ValidatePKCS1v15(test.message, test.keyID)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
@@ -338,7 +338,7 @@ func TestSignatureVerificationRSA(t *testing.T) {
 
 func TestSignatureVerificationModificationRSA(t *testing.T) {
 	tests := []struct {
-		keyID           verificationoptionrsa.KeyID
+		keyID           verificationrsaoption.KeyID
 		message         verificationoption.VerifiableMessage
 		receivedMessage verificationoption.VerifiableMessage
 		expectedValue   bool
@@ -441,11 +441,11 @@ func TestSignatureVerificationModificationRSA(t *testing.T) {
 	for _, test := range tests {
 		log.Printf("Case: %v", test.message)
 		// Don't check error as we want to test robustness of ValidateHMAC.
-		_ = verificationoptionrsa.SignPKCS1v15(test.message, test.keyID)
+		_ = verificationrsaoption.SignPKCS1v15(test.message, test.keyID)
 		if test.receivedMessage != nil {
 			log.Printf("Signature of Received Message: %v", test.receivedMessage.GetSignature())
 		}
-		isValid, err := verificationoptionrsa.ValidatePKCS1v15(test.receivedMessage, test.keyID)
+		isValid, err := verificationrsaoption.ValidatePKCS1v15(test.receivedMessage, test.keyID)
 		if err != nil && err.Error() != test.expectedError {
 			t.Errorf("Error actual = %v, and expected = %v", err, test.expectedError)
 		}
