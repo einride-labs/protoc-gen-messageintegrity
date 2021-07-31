@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package evaluation.v1;
+
+import "integrity/v1/signature.proto";
+option go_package = "github.com/einride/protoc-gen-messageintegrity/proto/gen/evaluation/v1";
+
+message EvaluationNoOption {
+  bytes payload = 1;
+  bytes signature = 2; // This is the simplest option just a field added to every proto.
+}
+
+message EvaulationOption {
+  bytes payload = 1;
+  bytes signature = 2 [(integrity.v1.signature) = {
+    behaviour: SIGNATURE_BEHAVIOUR_REQUIRED,
+  }];
+}
