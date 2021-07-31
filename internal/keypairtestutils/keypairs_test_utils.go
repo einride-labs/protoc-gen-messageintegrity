@@ -9,8 +9,19 @@ import (
 	"strings"
 )
 
+// Moves the RSA keypair for the corresponding keyID from the test-keys dir to the directory used by message-integrity
+func SetupRsaKeyPair(keyID verificationsymmetric.KeyID) error {
+	keyName := fmt.Sprintf("message_integrity_%v", keyID)
+	return setupKeyPair(keyName)
+}
+
+// Moves the ECDSA keypair for the corresponding keyID from the test-keys dir to the directory used by message-integrity
+func SetupEcdsaKeyPair(keyID verificationsymmetric.KeyID) error {
+	keyName := fmt.Sprintf("message_integrity_%v_ecdsa", keyID)
+	return setupKeyPair(keyName)
+}
 // Moves the keypair for the corresponding keyID from the test-keys dir to the directory used by message-integrity
-func SetupKeyPair(keyID verificationsymmetric.KeyID) error {
+func setupKeyPair(keyName string) error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		// Assuming the tests are being run from the root of the repo.
@@ -32,7 +43,6 @@ func SetupKeyPair(keyID verificationsymmetric.KeyID) error {
 	}
 	dstTestKeysDir := path.Join(home, verificationsymmetric.DefaultKeysDir)
 	_ = os.Mkdir(dstTestKeysDir, os.ModeDir)
-	keyName := fmt.Sprintf("message_integrity_%v", keyID)
 	publicKeyName := fmt.Sprintf("%v_public.pem", keyName)
 	privateKeyName := fmt.Sprintf("%v_private.pem", keyName)
 

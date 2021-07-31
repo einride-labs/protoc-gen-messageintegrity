@@ -45,7 +45,7 @@ func main() {
 
 	fmt.Printf("Key id : %v\n", keyID)
 	os.Setenv(integpb.ImplicitMessageIntegrityKeyID, string(keyID))
-	if err := keypairtestutils.SetupKeyPair(keyID); err != nil {
+	if err := keypairtestutils.SetupRsaKeyPair(keyID); err != nil {
 		log.Fatalf("failed to setup keypair for example: %v\n", err)
 	}
 	steeringCmd := integpb.SteeringCommandVerificationOption{SteeringAngle: 5.0}
