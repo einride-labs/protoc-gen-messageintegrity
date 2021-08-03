@@ -2,7 +2,7 @@
 
 Code for the thesis "Implicit Message Integrity in Heterogeneous Systems".
 
-This library provides a plugin to protocol buffer go complier [github.com/golang/protobuf][protoc-gen-go] to allow automatic generation of code for signing and verification of Protocol Buffer messages.
+This library provides a plugin to protocol buffer go complier [protoc-gen-go](https://www.github.com/golang/protobuf) to allow automatic generation of code for signing and verification of Protocol Buffer messages.
 
 
 ## Installing
