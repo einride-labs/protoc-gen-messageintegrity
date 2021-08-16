@@ -1,6 +1,0 @@
-options:
-  machineType: N1_HIGHCPU_8
-
-steps:
-  - name: eu.gcr.io/einride-build/cloud-builder-core:1.16
-    args: ["make"]
